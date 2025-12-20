@@ -1,9 +1,13 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ShoppingCart, User, Menu } from 'lucide-react';
-import './Navbar.css'; // We'll create this for specific styles if needed, or use inline/utility
+import { useShop } from '../context/ShopContext';
+import './Navbar.css';
 
 const Navbar = () => {
+    const { getCartCount } = useShop();
+    const count = getCartCount();
+
     return (
         <nav className="navbar">
             <div className="container navbar-content">
@@ -20,7 +24,7 @@ const Navbar = () => {
                 <div className="nav-actions">
                     <Link to="/cart" className="cart-icon">
                         <ShoppingCart size={24} />
-                        <span className="cart-badge">3</span>
+                        {count > 0 && <span className="cart-badge">{count}</span>}
                     </Link>
                     <button className="user-icon">
                         <User size={24} />

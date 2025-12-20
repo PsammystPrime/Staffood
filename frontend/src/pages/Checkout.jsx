@@ -2,12 +2,16 @@ import React, { useState } from 'react';
 import Navbar from '../components/Navbar';
 import { Smartphone, CheckCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useShop } from '../context/ShopContext';
 import './Checkout.css';
 
 const Checkout = () => {
     const [phone, setPhone] = useState('');
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+    const { getCartTotal, clearCart } = useShop();
+
+    const total = getCartTotal() + (getCartTotal() > 0 ? 100 : 0); // Adding mock delivery fee
 
     const handlePayment = (e) => {
         e.preventDefault();
@@ -16,6 +20,7 @@ const Checkout = () => {
         setTimeout(() => {
             setLoading(false);
             alert('STK Push sent to ' + phone + '. Complete payment on your phone.');
+            clearCart();
             navigate('/history');
         }, 2000);
     };
@@ -28,7 +33,7 @@ const Checkout = () => {
                     <h2 className="section-title">M-Pesa Checkout</h2>
                     <div className="text-center mb-6">
                         <p className="text-gray-500">Total to Pay</p>
-                        <h1 className="font-bold text-xl" style={{ fontSize: '2.5rem' }}>Ksh 1,400</h1>
+                        <h1 className="font-bold text-xl" style={{ fontSize: '2.5rem' }}>Ksh {total}</h1>
                     </div>
 
                     <form onSubmit={handlePayment}>

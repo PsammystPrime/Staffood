@@ -1,18 +1,15 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Navbar from '../components/Navbar';
 import { Trash2, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useShop } from '../context/ShopContext';
 import './Cart.css';
 
 const Cart = () => {
-    // Mock cart data
-    const [cartItems, setCartItems] = useState([
-        { id: 1, name: 'Fresh Mangoes', price: 150, quantity: 2, image: 'https://placehold.co/100x100/FFCC00/1A1A1A?text=Mango' },
-        { id: 2, name: 'Premium Rice (5kg)', price: 1200, quantity: 1, image: 'https://placehold.co/100x100/FEFCF5/1A1A1A?text=Rice' },
-    ]);
+    const { cart, removeFromCart, updateQuantity, getCartTotal } = useShop();
 
-    const subtotal = cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
-    const deliveryFee = 100; // Mock fee
+    const subtotal = getCartTotal();
+    const deliveryFee = subtotal > 0 ? 100 : 0;
     const total = subtotal + deliveryFee;
 
     return (
@@ -21,49 +18,65 @@ const Cart = () => {
             <div className="container section">
                 <h2 className="section-title">Your Cart</h2>
 
-                <div className="cart-layout">
-                    <div className="cart-items">
-                        {cartItems.map(item => (
-                            <div key={item.id} className="cart-item card p-4 flex gap-4 items-center">
-                                <img src={item.image} alt={item.name} className="cart-item-img" />
-                                <div className="flex-1">
-                                    <h3 className="font-bold">{item.name}</h3>
-                                    <p className="text-gray-500">Ksh {item.price}</p>
-                                </div>
-                                <div className="flex items-center gap-4">
-                                    <div className="quantity-controls flex items-center gap-2">
-                                        <button className="btn-sm">-</button>
-                                        <span>{item.quantity}</span>
-                                        <button className="btn-sm">+</button>
+                {cart.length === 0 ? (
+                    <div className="text-center">
+                        <p className="text-xl mb-4">Your cart is empty.</p>
+                        <Link to="/products" className="btn btn-primary">Start Shopping</Link>
+                    </div>
+                ) : (
+                    <div className="cart-layout">
+                        <div className="cart-items">
+                            {cart.map(item => (
+                                <div key={item.id} className="cart-item card p-4 flex gap-4 items-center">
+                                    <img src={item.image} alt={item.name} className="cart-item-img" />
+                                    <div className="flex-1">
+                                        <h3 className="font-bold">{item.name}</h3>
+                                        <p className="text-gray-500">Ksh {item.price}</p>
                                     </div>
-                                    <button className="text-danger">
-                                        <Trash2 size={20} color="#EF4444" />
-                                    </button>
+                                    <div className="flex items-center gap-4">
+                                        <div className="quantity-controls flex items-center gap-2">
+                                            <button
+                                                className="btn-sm"
+                                                onClick={() => updateQuantity(item.id, -1)}
+                                            >-</button>
+                                            <span>{item.quantity}</span>
+                                            <button
+                                                className="btn-sm"
+                                                onClick={() => updateQuantity(item.id, 1)}
+                                            >+</button>
+                                        </div>
+                                        <button
+                                            className="text-danger"
+                                            onClick={() => removeFromCart(item.id)}
+                                        >
+                                            <Trash2 size={20} color="#EF4444" />
+                                        </button>
+                                    </div>
                                 </div>
+                            ))}
+                        </div>
+
+                        <div className="cart-summary card p-4">
+                            <h3 className="font-bold text-xl mb-4">Order Summary</h3>
+                            <div className="flex justify-between mb-2">
+                                <span>Subtotal</span>
+                                <span>Ksh {subtotal}</span>
                             </div>
-                        ))}
-                    </div>
+                            <div className="flex justify-between mb-4">
+                                <span>Delivery Fee</span>
+                                <span>Ksh {deliveryFee}</span>
+                            </div>
+                            <div className="flex justify-between font-bold text-xl mb-6 border-t pt-4">
+                                <span>Total</span>
+                                <span>Ksh {total}</span>
+                            </div>
 
-                    <div className="cart-summary card p-4">
-                        <h3 className="font-bold text-xl mb-4">Order Summary</h3>
-                        <div className="flex justify-between mb-2">
-                            <span>Subtotal</span>
-                            <span>Ksh {subtotal}</span>
+                            <Link to="/checkout" className="btn btn-primary w-full">
+                                Proceed to M-Pesa Checkout <ArrowRight size={18} />
+                            </Link>
                         </div>
-                        <div className="flex justify-between mb-4">
-                            <span>Delivery Fee</span>
-                            <span>Ksh {deliveryFee}</span>
-                        </div>
-                        <div className="flex justify-between font-bold text-xl mb-6 border-t pt-4">
-                            <span>Total</span>
-                            <span>Ksh {total}</span>
-                        </div>
-
-                        <Link to="/checkout" className="btn btn-primary w-full">
-                            Proceed to M-Pesa Checkout <ArrowRight size={18} />
-                        </Link>
                     </div>
-                </div>
+                )}
             </div>
         </>
     );

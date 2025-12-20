@@ -1,8 +1,11 @@
 import React from 'react';
 import { Plus } from 'lucide-react';
+import { useShop } from '../context/ShopContext';
 import './ProductCard.css';
 
 const ProductCard = ({ product }) => {
+    const { addToCart } = useShop();
+
     return (
         <div className="card product-card">
             <div className="product-image-container">
@@ -14,7 +17,10 @@ const ProductCard = ({ product }) => {
                     <span className="price-tag">Ksh {product.price}</span>
                 </div>
                 <p className="text-gray-500 mt-1 text-sm">{product.category}</p>
-                <button className="btn btn-primary mt-4 w-full">
+                <button
+                    className="btn btn-primary mt-4 w-full"
+                    onClick={() => addToCart(product)}
+                >
                     <Plus size={18} /> Add to Cart
                 </button>
             </div>
