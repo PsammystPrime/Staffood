@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ShoppingCart, User, Menu, X } from 'lucide-react';
+import { ShoppingCart, User, Menu, X, Home, Store, Package, UserCircle } from 'lucide-react';
 import { useShop } from '../context/ShopContext';
 import './Navbar.css';
 
@@ -45,10 +45,22 @@ const Navbar = () => {
             {/* Mobile Menu Dropdown */}
             {isMenuOpen && (
                 <div className="mobile-menu">
-                    <Link to="/" onClick={closeMenu}>Home</Link>
-                    <Link to="/products" onClick={closeMenu}>Shop</Link>
-                    <Link to="/history" onClick={closeMenu}>Orders</Link>
-                    <Link to="/profile" onClick={closeMenu}>My Profile</Link>
+                    <Link to="/" onClick={closeMenu}>
+                        <Home size={20} />
+                        <span>Home</span>
+                    </Link>
+                    <Link to="/products" onClick={closeMenu}>
+                        <Store size={20} />
+                        <span>Shop</span>
+                    </Link>
+                    <Link to="/history" onClick={closeMenu}>
+                        <Package size={20} />
+                        <span>Orders</span>
+                    </Link>
+                    <Link to="/profile" onClick={closeMenu}>
+                        <UserCircle size={20} />
+                        <span>My Profile</span>
+                    </Link>
                 </div>
             )}
         </nav>

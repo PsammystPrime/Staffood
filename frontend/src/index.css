@@ -37,6 +37,8 @@ body {
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   position: relative;
+  padding-top: 70px;
+  /* Offset for fixed navbar */
 }
 
 img,
