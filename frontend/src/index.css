@@ -164,3 +164,7 @@ ul {
 .text-gray-500 {
   color: var(--color-text-light);
 }
+
+.cart-item {
+  margin-bottom: 1rem;
+}
