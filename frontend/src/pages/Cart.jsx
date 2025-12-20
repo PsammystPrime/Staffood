@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Navbar from '../components/Navbar';
 import { Trash2, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -7,9 +7,10 @@ import './Cart.css';
 
 const Cart = () => {
     const { cart, removeFromCart, updateQuantity, getCartTotal } = useShop();
+    const [includeDelivery, setIncludeDelivery] = useState(true);
 
     const subtotal = getCartTotal();
-    const deliveryFee = subtotal > 0 ? 100 : 0;
+    const deliveryFee = (subtotal > 0 && includeDelivery) ? 100 : 0;
     const total = subtotal + deliveryFee;
 
     return (
@@ -62,6 +63,19 @@ const Cart = () => {
                                 <span>Subtotal</span>
                                 <span>Ksh {subtotal}</span>
                             </div>
+
+                            <div className="delivery-toggle mb-2">
+                                <label className="flex items-center gap-2 cursor-pointer">
+                                    <input
+                                        type="checkbox"
+                                        checked={includeDelivery}
+                                        onChange={(e) => setIncludeDelivery(e.target.checked)}
+                                        className="delivery-checkbox"
+                                    />
+                                    <span className="text-sm">Include delivery fee (Ksh 100)</span>
+                                </label>
+                            </div>
+
                             <div className="flex justify-between mb-4">
                                 <span>Delivery Fee</span>
                                 <span>Ksh {deliveryFee}</span>

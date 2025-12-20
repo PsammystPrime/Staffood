@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Navbar from '../components/Navbar';
-import { Smartphone, CheckCircle } from 'lucide-react';
+import { CheckCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useShop } from '../context/ShopContext';
 import './Checkout.css';
@@ -40,9 +40,8 @@ const Checkout = () => {
                         <div className="form-group">
                             <label>M-Pesa Phone Number</label>
                             <div className="input-with-icon">
-                                <Smartphone size={20} className="input-icon" />
                                 <input
-                                    type="tel"
+                                    type="number"
                                     placeholder="07XX XXX XXX"
                                     className="form-input"
                                     value={phone}
