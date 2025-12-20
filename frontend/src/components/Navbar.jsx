@@ -32,9 +32,9 @@ const Navbar = () => {
                         {count > 0 && <span className="cart-badge">{count}</span>}
                     </Link>
 
-                    <button className="user-icon desktop-only">
+                    <Link to="/profile" className="user-icon" onClick={closeMenu}>
                         <User size={24} />
-                    </button>
+                    </Link>
 
                     <button className="menu-icon" onClick={toggleMenu}>
                         {isMenuOpen ? <X size={24} /> : <Menu size={24} />}

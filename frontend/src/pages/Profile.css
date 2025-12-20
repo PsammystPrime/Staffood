@@ -1,0 +1,139 @@
+.profile-header {
+    text-align: center;
+    padding: 2rem 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+}
+
+.profile-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    box-shadow: var(--shadow-lg);
+}
+
+.profile-avatar svg {
+    color: #000;
+}
+
+.profile-name {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.points-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+    color: #000;
+    padding: 0.5rem 1.5rem;
+    border-radius: 999px;
+    font-weight: 600;
+    box-shadow: var(--shadow-md);
+}
+
+.profile-content {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.profile-actions {
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: center;
+}
+
+.edit-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.profile-details {
+    padding: 2rem;
+}
+
+.detail-item {
+    display: flex;
+    gap: 1rem;
+    padding: 1.5rem 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.detail-item:last-child {
+    border-bottom: none;
+}
+
+.detail-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: rgba(255, 204, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.detail-icon svg {
+    color: var(--color-primary-dark);
+}
+
+.detail-content {
+    flex: 1;
+}
+
+.detail-content label {
+    display: block;
+    font-size: 0.875rem;
+    color: var(--color-text-light);
+    margin-bottom: 0.25rem;
+    font-weight: 500;
+}
+
+.detail-content p {
+    font-size: 1rem;
+    color: var(--color-text);
+    font-weight: 500;
+}
+
+.detail-content .form-input {
+    width: 100%;
+    padding: 0.5rem;
+    border: 2px solid var(--color-primary);
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    font-family: inherit;
+    transition: border-color 0.2s;
+}
+
+.detail-content .form-input:focus {
+    outline: none;
+    border-color: var(--color-primary-dark);
+    box-shadow: 0 0 0 3px rgba(255, 204, 0, 0.1);
+}
+
+@media (max-width: 768px) {
+    .profile-name {
+        font-size: 1.5rem;
+    }
+
+    .profile-details {
+        padding: 1rem;
+    }
+
+    .edit-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .edit-actions button {
+        width: 100%;
+    }
+}

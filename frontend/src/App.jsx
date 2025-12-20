@@ -4,6 +4,7 @@ import Shop from './pages/Shop';
 import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
 import OrderHistory from './pages/OrderHistory';
+import Profile from './pages/Profile';
 import { ShopProvider } from './context/ShopContext';
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/history" element={<OrderHistory />} />
           <Route path="/products" element={<Shop />} />
+          <Route path="/profile" element={<Profile />} />
         </Routes>
       </BrowserRouter>
     </ShopProvider>
