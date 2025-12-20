@@ -1,0 +1,28 @@
+.product-image-container {
+    height: 200px;
+    background-color: #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.product-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s;
+}
+
+.card:hover .product-image {
+    transform: scale(1.05);
+}
+
+.price-tag {
+    font-weight: 700;
+    color: var(--color-primary-dark);
+}
+
+.w-full {
+    width: 100%;
+}

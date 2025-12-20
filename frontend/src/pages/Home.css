@@ -1,0 +1,44 @@
+.hero {
+    background: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7)), url('/hero.png');
+    background-size: cover;
+    background-position: center;
+    padding: 8rem 0;
+    text-align: center;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.hero h1 {
+    font-size: 3.5rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+    line-height: 1.1;
+    color: #1A1A1A;
+}
+
+.text-highlight {
+    color: var(--color-primary);
+    background: linear-gradient(120deg, transparent 0%, transparent 60%, rgba(255, 204, 0, 0.3) 60%);
+}
+
+.hero p {
+    font-size: 1.25rem;
+    color: var(--color-text-light);
+    max-width: 600px;
+    margin: 0 auto 2rem;
+}
+
+.hero-btn {
+    font-size: 1.25rem;
+    padding: 1rem 2.5rem;
+}
+
+.section {
+    padding: 4rem 1.5rem;
+}
+
+.section-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    text-align: center;
+}
