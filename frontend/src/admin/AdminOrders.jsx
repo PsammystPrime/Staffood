@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Package, TrendingUp, ShoppingBag, Users, LogOut, Search, Eye, CheckCircle, XCircle } from 'lucide-react';
+import { Package, TrendingUp, ShoppingBag, Users, LogOut, Search, Eye, CheckCircle, XCircle, Menu, X } from 'lucide-react';
 import './AdminDashboard.css';
 import './AdminOrders.css';
 
 const AdminOrders = () => {
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [filterStatus, setFilterStatus] = useState('All');
 
@@ -80,7 +81,24 @@ const AdminOrders = () => {
 
     return (
         <div className="admin-container">
-            <aside className="admin-sidebar">
+            <div className="mobile-header">
+                <div className="mobile-header-logo">
+                    Staffoods<span className="logo-dot">.</span>
+                </div>
+                <button
+                    className="mobile-menu-toggle"
+                    onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                >
+                    {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                </button>
+            </div>
+
+            <div
+                className={`mobile-overlay ${isMobileMenuOpen ? 'active' : ''}`}
+                onClick={() => setIsMobileMenuOpen(false)}
+            />
+
+            <aside className={`admin-sidebar ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
                 <div className="admin-logo">
                     <h2>Staffoods<span className="logo-dot">.</span></h2>
                     <p className="admin-label">Admin Panel</p>

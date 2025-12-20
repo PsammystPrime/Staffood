@@ -116,4 +116,45 @@
     .users-grid {
         grid-template-columns: 1fr;
     }
+
+    .user-card {
+        padding: 1.25rem;
+    }
+
+    .user-avatar {
+        width: 70px;
+        height: 70px;
+    }
+
+    .user-name {
+        font-size: 1.125rem;
+    }
+
+    .user-stats {
+        gap: 0.75rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .user-avatar {
+        width: 60px;
+        height: 60px;
+    }
+
+    .user-avatar svg {
+        width: 28px;
+        height: 28px;
+    }
+
+    .user-name {
+        font-size: 1rem;
+    }
+
+    .user-detail {
+        font-size: 0.8125rem;
+    }
+
+    .stat-value {
+        font-size: 0.875rem;
+    }
 }

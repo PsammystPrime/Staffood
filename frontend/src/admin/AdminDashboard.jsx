@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Package, ShoppingBag, Users, DollarSign, TrendingUp, LogOut } from 'lucide-react';
+import { Package, ShoppingBag, Users, DollarSign, TrendingUp, LogOut, Menu, X } from 'lucide-react';
 import './AdminDashboard.css';
 
 const AdminDashboard = () => {
     const navigate = useNavigate();
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
     // Mock data - will be replaced with API calls
     const [stats] = useState({
@@ -27,7 +28,24 @@ const AdminDashboard = () => {
 
     return (
         <div className="admin-container">
-            <aside className="admin-sidebar">
+            <div className="mobile-header">
+                <div className="mobile-header-logo">
+                    Staffoods<span className="logo-dot">.</span>
+                </div>
+                <button
+                    className="mobile-menu-toggle"
+                    onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                >
+                    {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                </button>
+            </div>
+
+            <div
+                className={`mobile-overlay ${isMobileMenuOpen ? 'active' : ''}`}
+                onClick={() => setIsMobileMenuOpen(false)}
+            />
+
+            <aside className={`admin-sidebar ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
                 <div className="admin-logo">
                     <h2>Staffoods<span className="logo-dot">.</span></h2>
                     <p className="admin-label">Admin Panel</p>

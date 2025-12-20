@@ -159,5 +159,36 @@
     .filter-tabs {
         overflow-x: auto;
         flex-wrap: nowrap;
+        padding-bottom: 0.5rem;
+    }
+
+    .filter-tab {
+        white-space: nowrap;
+    }
+
+    .order-card {
+        padding: 1rem;
+    }
+
+    .order-actions {
+        flex-direction: column;
+    }
+
+    .action-btn {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .order-id {
+        font-size: 1rem;
+    }
+
+    .detail-row {
+        font-size: 0.8125rem;
+    }
+
+    .detail-row.total .detail-value {
+        font-size: 1rem;
     }
 }
