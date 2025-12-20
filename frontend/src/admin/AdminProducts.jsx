@@ -9,6 +9,7 @@ const AdminProducts = () => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [products, setProducts] = useState(PRODUCTS);
     const [searchTerm, setSearchTerm] = useState('');
+    const [categoryFilter, setCategoryFilter] = useState('All');
     const [isAddingProduct, setIsAddingProduct] = useState(false);
     const [editingProduct, setEditingProduct] = useState(null);
     const [newProduct, setNewProduct] = useState({
@@ -18,10 +19,12 @@ const AdminProducts = () => {
         image: ''
     });
 
-    const filteredProducts = products.filter(product =>
-        product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        product.category.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const filteredProducts = products.filter(product => {
+        const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            product.category.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesCategory = categoryFilter === 'All' || product.category === categoryFilter;
+        return matchesSearch && matchesCategory;
+    });
 
     const handleAddProduct = () => {
         if (newProduct.name && newProduct.price) {
@@ -139,6 +142,18 @@ const AdminProducts = () => {
                                 onChange={(e) => setSearchTerm(e.target.value)}
                             />
                         </div>
+
+                        <div className="filter-tabs" style={{ marginTop: '1rem' }}>
+                            {['All', 'Fruits', 'Juices', 'Groceries'].map(category => (
+                                <button
+                                    key={category}
+                                    className={`filter-tab ${categoryFilter === category ? 'active' : ''}`}
+                                    onClick={() => setCategoryFilter(category)}
+                                >
+                                    {category}
+                                </button>
+                            ))}
+                        </div>
                     </div>
 
                     {(isAddingProduct || editingProduct) && (
@@ -208,8 +223,8 @@ const AdminProducts = () => {
                                 <tr>
                                     <th>ID</th>
                                     <th>Product Name</th>
-                                    <th>Category</th>
                                     <th>Price</th>
+                                    <th>Category</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -218,10 +233,10 @@ const AdminProducts = () => {
                                     <tr key={product.id}>
                                         <td className="order-id">#{product.id}</td>
                                         <td>{product.name}</td>
+                                        <td className="price-cell">Ksh {product.price}</td>
                                         <td>
                                             <span className="category-badge">{product.category}</span>
                                         </td>
-                                        <td className="price-cell">Ksh {product.price}</td>
                                         <td>
                                             <div className="action-buttons">
                                                 <button
