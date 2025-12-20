@@ -23,7 +23,7 @@ const Shop = () => {
         <>
             <Navbar />
             <div className="container section">
-                <div className="flex justify-between items-center mb-8">
+                <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
                     <h2 className="section-title mb-0" style={{ marginBottom: 0 }}>Shop</h2>
 
                     <div className="filter-menu">

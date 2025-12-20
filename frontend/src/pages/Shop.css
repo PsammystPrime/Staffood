@@ -31,7 +31,8 @@
 
 @media (max-width: 640px) {
     .filter-menu {
-        overflow-x: auto;
+        flex-wrap: wrap;
+        justify-content: center;
         max-width: 100%;
     }
 }

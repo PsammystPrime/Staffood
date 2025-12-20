@@ -26,3 +26,20 @@
 .w-full {
     width: 100%;
 }
+
+@media (max-width: 768px) {
+    .product-image-container {
+        height: 140px;
+        /* Reduce height on mobile */
+    }
+
+    .product-card h3 {
+        font-size: 1rem;
+        /* Smaller title */
+    }
+
+    .product-card .p-4 {
+        padding: 0.75rem;
+        /* Reduce padding */
+    }
+}

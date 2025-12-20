@@ -75,3 +75,48 @@
     cursor: pointer;
     color: var(--color-text);
 }
+
+.menu-icon {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--color-text);
+}
+
+.mobile-menu {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .nav-links {
+        display: none;
+    }
+
+    .desktop-only {
+        display: none;
+    }
+
+    .menu-icon {
+        display: block;
+    }
+
+    .mobile-menu {
+        display: flex;
+        flex-direction: column;
+        background: var(--color-white);
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
+        padding: 1rem 0;
+    }
+
+    .mobile-menu a {
+        padding: 0.75rem 1.5rem;
+        color: var(--color-text);
+        font-weight: 500;
+        transition: background-color 0.2s;
+    }
+
+    .mobile-menu a:hover {
+        background-color: rgba(255, 204, 0, 0.1);
+    }
+}
