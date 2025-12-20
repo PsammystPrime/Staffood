@@ -1,8 +1,8 @@
 .hero {
-    background: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7)), url('/hero.png');
+    background: linear-gradient(rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.1)), url('/hero.png');
     background-size: cover;
     background-position: center;
-    padding: 8rem 0;
+    padding: 18rem 0;
     text-align: center;
     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
@@ -17,7 +17,7 @@
 
 .text-highlight {
     color: var(--color-primary);
-    background: linear-gradient(120deg, transparent 0%, transparent 60%, rgba(255, 204, 0, 0.3) 60%);
+    background: linear-gradient(120deg, transparent 60%, rgba(206, 180, 75, 0.3) 60%);
 }
 
 .hero p {
