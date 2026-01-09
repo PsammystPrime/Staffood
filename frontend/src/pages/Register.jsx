@@ -1,0 +1,206 @@
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Mail, Lock, User, Phone, MapPin, Eye, EyeOff } from 'lucide-react';
+import './Auth.css';
+
+const Register = () => {
+    const navigate = useNavigate();
+    const [showPassword, setShowPassword] = useState(false);
+    const [formData, setFormData] = useState({
+        username: '',
+        email: '',
+        phone: '',
+        password: '',
+        confirmPassword: '',
+        location: ''
+    });
+    const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
+
+    const handleChange = (e) => {
+        setFormData({
+            ...formData,
+            [e.target.name]: e.target.value
+        });
+        setError('');
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setError('');
+
+        // Validation
+        if (formData.password !== formData.confirmPassword) {
+            setError('Passwords do not match');
+            return;
+        }
+
+        if (formData.password.length < 6) {
+            setError('Password must be at least 6 characters');
+            return;
+        }
+
+        setLoading(true);
+
+        try {
+            const response = await fetch('http://localhost:5000/api/auth/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    username: formData.username,
+                    email: formData.email,
+                    phone: formData.phone,
+                    password: formData.password,
+                    location: formData.location
+                }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                // Store token
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('user', JSON.stringify(data.user));
+                // Redirect to home
+                navigate('/');
+            } else {
+                setError(data.message || 'Registration failed');
+            }
+        } catch (err) {
+            setError('Network error. Please try again.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <div className="auth-container">
+            <div className="auth-card">
+                <div className="auth-header">
+                    <h1>Staffoods<span className="logo-dot">.</span></h1>
+                    <h2>Create Account</h2>
+                    <p>Join us and start shopping fresh!</p>
+                </div>
+
+                <form onSubmit={handleSubmit} className="auth-form">
+                    {error && <div className="error-message">{error}</div>}
+
+                    <div className="form-group">
+                        <label htmlFor="username">Username</label>
+                        <div className="input-wrapper">
+                            <User size={20} />
+                            <input
+                                type="text"
+                                id="username"
+                                name="username"
+                                placeholder="Enter your username"
+                                value={formData.username}
+                                onChange={handleChange}
+                                required
+                            />
+                        </div>
+                    </div>
+
+                    <div className="form-group">
+                        <label htmlFor="email">Email Address</label>
+                        <div className="input-wrapper">
+                            <Mail size={20} />
+                            <input
+                                type="email"
+                                id="email"
+                                name="email"
+                                placeholder="Enter your email"
+                                value={formData.email}
+                                onChange={handleChange}
+                                required
+                            />
+                        </div>
+                    </div>
+
+                    <div className="form-group">
+                        <label htmlFor="phone">Phone Number</label>
+                        <div className="input-wrapper">
+                            <Phone size={20} />
+                            <input
+                                type="tel"
+                                id="phone"
+                                name="phone"
+                                placeholder="+254 712 345 678"
+                                value={formData.phone}
+                                onChange={handleChange}
+                                required
+                            />
+                        </div>
+                    </div>
+
+                    <div className="form-group">
+                        <label htmlFor="location">Location</label>
+                        <div className="input-wrapper">
+                            <MapPin size={20} />
+                            <input
+                                type="text"
+                                id="location"
+                                name="location"
+                                placeholder="e.g., Kahawa Sukari, Nairobi"
+                                value={formData.location}
+                                onChange={handleChange}
+                                required
+                            />
+                        </div>
+                    </div>
+
+                    <div className="form-group">
+                        <label htmlFor="password">Password</label>
+                        <div className="input-wrapper">
+                            <Lock size={20} />
+                            <input
+                                type={showPassword ? 'text' : 'password'}
+                                id="password"
+                                name="password"
+                                placeholder="Enter your password"
+                                value={formData.password}
+                                onChange={handleChange}
+                                required
+                            />
+                            <button
+                                type="button"
+                                className="toggle-password"
+                                onClick={() => setShowPassword(!showPassword)}
+                            >
+                                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="form-group">
+                        <label htmlFor="confirmPassword">Confirm Password</label>
+                        <div className="input-wrapper">
+                            <Lock size={20} />
+                            <input
+                                type={showPassword ? 'text' : 'password'}
+                                id="confirmPassword"
+                                name="confirmPassword"
+                                placeholder="Confirm your password"
+                                value={formData.confirmPassword}
+                                onChange={handleChange}
+                                required
+                            />
+                        </div>
+                    </div>
+
+                    <button type="submit" className="btn btn-primary w-full" disabled={loading}>
+                        {loading ? 'Creating Account...' : 'Create Account'}
+                    </button>
+
+                    <div className="auth-footer">
+                        <p>Already have an account? <Link to="/login">Login here</Link></p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    );
+};
+
+export default Register;
