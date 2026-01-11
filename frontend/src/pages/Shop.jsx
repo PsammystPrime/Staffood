@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import ProductCard from '../components/ProductCard';
+import Loader from '../components/Loader';
 import { Filter } from 'lucide-react';
 import './Shop.css';
 
@@ -76,8 +77,8 @@ const Shop = () => {
                 </div>
 
                 {loading ? (
-                    <div className="loading-state">
-                        <p>Loading products...</p>
+                    <div style={{ minHeight: '50vh', display: 'flex', alignItems: 'center' }}>
+                        <Loader />
                     </div>
                 ) : error ? (
                     <div className="error-state">

@@ -14,10 +14,14 @@ app.use(bodyParser.urlencoded({ extended: true }));
 const authRoutes = require('./routes/auth');
 const productsRoutes = require('./routes/products');
 const usersRoutes = require('./routes/users');
+const cartRoutes = require('./routes/cart');
+const ordersRoutes = require('./routes/orders');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productsRoutes);
 app.use('/api/users', usersRoutes);
+app.use('/api/cart', cartRoutes);
+app.use('/api/orders', ordersRoutes);
 
 // Basic route
 app.get('/', (req, res) => {
