@@ -54,10 +54,16 @@ const Navbar = () => {
                             </Link>
                         </>
                     ) : (
-                        /* Show Profile for authenticated users */
-                        <Link to="/profile" className="user-icon desktop-only" onClick={closeMenu}>
-                            <User size={24} />
-                        </Link>
+                        /* Show Profile and Logout for authenticated users */
+                        <>
+                            <Link to="/profile" className="user-icon desktop-only" onClick={closeMenu}>
+                                <User size={24} />
+                            </Link>
+                            <button className="btn-logout desktop-only" onClick={handleLogout}>
+                                <LogOut size={18} />
+                                <span>Logout</span>
+                            </button>
+                        </>
                     )}
 
                     <button className="menu-icon" onClick={toggleMenu}>

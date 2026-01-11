@@ -110,7 +110,7 @@ const Profile = () => {
                 </div>
 
                 <div className="profile-content">
-                    <div className="profile-actions">
+                    {/* <div className="profile-actions">
                         {!isEditing ? (
                             <button className="btn btn-primary" onClick={handleEdit}>
                                 <Edit2 size={18} /> Edit Profile
@@ -125,7 +125,7 @@ const Profile = () => {
                                 </button>
                             </div>
                         )}
-                    </div>
+                    </div> */}
 
                     <div className="profile-details card">
                         <div className="detail-item">
@@ -133,16 +133,16 @@ const Profile = () => {
                                 <User size={20} />
                             </div>
                             <div className="detail-content">
-                                <label>Username</label>
+                                <label>Name</label>
                                 {isEditing ? (
                                     <input
                                         type="text"
-                                        value={editedProfile.username}
-                                        onChange={(e) => handleChange('username', e.target.value)}
+                                        value={editedProfile.name}
+                                        onChange={(e) => handleChange('name', e.target.value)}
                                         className="form-input"
                                     />
                                 ) : (
-                                    <p>{profile.username}</p>
+                                    <p>{profile.name}</p>
                                 )}
                             </div>
                         </div>
@@ -187,11 +187,11 @@ const Profile = () => {
 
                         <div className="detail-item">
                             <div className="detail-icon">
-                                <Award size={20} />
+                                <MapPin size={20} />
                             </div>
                             <div className="detail-content">
-                                <label>Total Orders</label>
-                                <p>{profile.total_orders} orders</p>
+                                <label>Location</label>
+                                <p>{profile.location}</p>
                             </div>
                         </div>
 
@@ -200,8 +200,8 @@ const Profile = () => {
                                 <Award size={20} />
                             </div>
                             <div className="detail-content">
-                                <label>Total Spent</label>
-                                <p>Ksh {profile.total_spent?.toLocaleString() || 0}</p>
+                                <label>Total Orders</label>
+                                <p>{profile.total_orders} orders</p>
                             </div>
                         </div>
                     </div>

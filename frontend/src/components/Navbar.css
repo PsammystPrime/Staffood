@@ -82,6 +82,29 @@
     box-shadow: var(--shadow-md);
 }
 
+.btn-logout {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    transition: all 0.2s;
+    font-size: 0.9375rem;
+    background: #EF4444;
+    color: white;
+    border: 2px solid #EF4444;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.btn-logout:hover {
+    background: #DC2626;
+    border-color: #DC2626;
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
 .mobile-menu-logout {
     display: flex;
     align-items: center;

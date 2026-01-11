@@ -12,20 +12,48 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-this';
 // @access  Public
 router.post('/register', async (req, res) => {
     try {
-        const { username, email, phone, password, location } = req.body;
+        const { name, email, phone, password, location } = req.body;
+        
         // Validation
-        if (!username || !email || !phone || !password) {
+        if (!name || !email || !phone || !password) {
             return res.status(400).json({ message: 'Please provide all required fields' });
         }
 
         // Check if user already exists
         const [existingUsers] = await db.query(
-            'SELECT * FROM users WHERE email = ? OR username = ? OR phone = ?',
-            [email, username, phone]
+            'SELECT * FROM users WHERE email = ? OR phone = ?',
+            [email, phone]
         );
 
         if (existingUsers.length > 0) {
-            return res.status(400).json({ message: 'User already exists with this email or username' });
+            return res.status(400).json({ message: 'User already exists with this email or phone' });
+        }
+
+        // Generate unique username from name
+        const baseUsername = name.toLowerCase().replace(/\s+/g, '');
+        let username = baseUsername;
+        let counter = 1;
+
+        // Check if username exists and generate unique one
+        while (true) {
+            const [usernameCheck] = await db.query(
+                'SELECT id FROM users WHERE username = ?',
+                [username]
+            );
+
+            if (usernameCheck.length === 0) {
+                break; // Username is unique
+            }
+
+            // Add random number to make it unique
+            username = `${baseUsername}${Math.floor(Math.random() * 1000)}`;
+            counter++;
+
+            if (counter > 10) {
+                // Fallback to timestamp if too many attempts
+                username = `${baseUsername}${Date.now()}`;
+                break;
+            }
         }
 
         // Hash password
@@ -34,13 +62,13 @@ router.post('/register', async (req, res) => {
 
         // Insert user
         const [result] = await db.query(
-            'INSERT INTO users (username, email, phone, password) VALUES (?, ?, ?, ?)',
-            [username, email, phone, hashedPassword]
+            'INSERT INTO users (name, username, email, phone, location, password) VALUES (?, ?, ?, ?, ?, ?)',
+            [name, username, email, phone, location || null, hashedPassword]
         );
 
         const userId = result.insertId;
 
-        // Initialize user points
+        // Initialize user points with default values
         await db.query(
             'INSERT INTO user_points (user_id, points, total_spent, total_orders) VALUES (?, 0, 0, 0)',
             [userId]
@@ -48,7 +76,7 @@ router.post('/register', async (req, res) => {
 
         // Create JWT token
         const token = jwt.sign(
-            { id: userId, email, username },
+            { id: userId, email, username, name },
             JWT_SECRET,
             { expiresIn: '7d' }
         );
@@ -59,6 +87,7 @@ router.post('/register', async (req, res) => {
             token,
             user: {
                 id: userId,
+                name,
                 username,
                 email,
                 phone
@@ -76,7 +105,6 @@ router.post('/register', async (req, res) => {
 router.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
-        console.log(email, password)
 
         // Validation
         if (!email || !password) {
@@ -90,7 +118,7 @@ router.post('/login', async (req, res) => {
         );
 
         if (users.length === 0) {
-            return res.status(401).json({ message: 'No such user,please register' });
+            return res.status(401).json({ message: 'No such user, please register' });
         }
 
         const user = users[0];
@@ -110,7 +138,7 @@ router.post('/login', async (req, res) => {
 
         // Create JWT token
         const token = jwt.sign(
-            { id: user.id, email: user.email, username: user.username },
+            { id: user.id, email: user.email, username: user.username, name: user.name },
             JWT_SECRET,
             { expiresIn: '7d' }
         );
@@ -121,6 +149,7 @@ router.post('/login', async (req, res) => {
             token,
             user: {
                 id: user.id,
+                name: user.name,
                 username: user.username,
                 email: user.email,
                 phone: user.phone,

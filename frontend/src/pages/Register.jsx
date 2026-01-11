@@ -9,7 +9,7 @@ const Register = () => {
     const { login } = useAuth();
     const [showPassword, setShowPassword] = useState(false);
     const [formData, setFormData] = useState({
-        username: '',
+        name: '',
         email: '',
         phone: '',
         password: '',
@@ -51,7 +51,7 @@ const Register = () => {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    username: formData.username,
+                    name: formData.name,
                     email: formData.email,
                     phone: formData.phone,
                     password: formData.password,
@@ -89,15 +89,15 @@ const Register = () => {
                     {error && <div className="error-message">{error}</div>}
 
                     <div className="form-group">
-                        <label htmlFor="username">Username</label>
+                        <label htmlFor="name">Full Name</label>
                         <div className="input-wrapper">
                             <User size={20} />
                             <input
                                 type="text"
-                                id="username"
-                                name="username"
-                                placeholder="Enter your username"
-                                value={formData.username}
+                                id="name"
+                                name="name"
+                                placeholder="Enter your full name"
+                                value={formData.name}
                                 onChange={handleChange}
                                 required
                             />
