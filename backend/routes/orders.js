@@ -125,4 +125,64 @@ router.get('/user/:userId', async (req, res) => {
     }
 });
 
+// @route   GET /api/orders/admin
+// @desc    Get all orders for admin (with user details)
+// @access  Private/Admin
+router.get('/admin', async (req, res) => {
+    try {
+        // Fetch all orders with user name
+        const [orders] = await db.query(`
+            SELECT o.*, u.name as user_name 
+            FROM orders o 
+            LEFT JOIN users u ON o.user_id = u.id 
+            ORDER BY o.created_at DESC
+        `);
+
+        // Fetch items for each order
+        const ordersWithItems = await Promise.all(orders.map(async (order) => {
+            const [items] = await db.query(
+                'SELECT product_name, quantity, price, subtotal FROM order_items WHERE order_id = ?',
+                [order.id]
+            );
+            return {
+                ...order,
+                items
+            };
+        }));
+
+        res.json({ success: true, orders: ordersWithItems });
+    } catch (error) {
+        console.error('Error fetching admin orders:', error);
+        res.status(500).json({ message: 'Server error fetching orders' });
+    }
+});
+
+// @route   PUT /api/orders/:id/status
+// @desc    Update order status
+// @access  Private/Admin
+router.put('/:id/status', async (req, res) => {
+    try {
+        const { status } = req.body;
+        const { id } = req.params;
+
+        if (!status) {
+            return res.status(400).json({ message: 'Status is required' });
+        }
+
+        const [result] = await db.query(
+            'UPDATE orders SET status = ? WHERE id = ?',
+            [status, id]
+        );
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: 'Order not found' });
+        }
+
+        res.json({ success: true, message: 'Order status updated successfully' });
+    } catch (error) {
+        console.error('Error updating order status:', error);
+        res.status(500).json({ message: 'Server error updating order status' });
+    }
+});
+
 module.exports = router;
