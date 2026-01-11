@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, User, Phone, MapPin, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import Navbar from '../components/Navbar';
 import './Auth.css';
 
 const Register = () => {
@@ -77,130 +78,133 @@ const Register = () => {
     };
 
     return (
-        <div className="auth-container">
-            <div className="auth-card">
-                <div className="auth-header">
-                    <h1>Staffoods<span className="logo-dot">.</span></h1>
-                    <h2>Create Account</h2>
-                    <p>Join us and start shopping fresh!</p>
+        <>
+            <Navbar />
+            <div className="auth-container">
+                <div className="auth-card">
+                    <div className="auth-header">
+                        <h1>Staffoods<span className="logo-dot">.</span></h1>
+                        <h2>Create Account</h2>
+                        <p>Join us and start shopping fresh!</p>
+                    </div>
+
+                    <form onSubmit={handleSubmit} className="auth-form">
+                        {error && <div className="error-message">{error}</div>}
+
+                        <div className="form-group">
+                            <label htmlFor="name">Full Name</label>
+                            <div className="input-wrapper">
+                                <User size={20} />
+                                <input
+                                    type="text"
+                                    id="name"
+                                    name="name"
+                                    placeholder="Enter your full name"
+                                    value={formData.name}
+                                    onChange={handleChange}
+                                    required
+                                />
+                            </div>
+                        </div>
+
+                        <div className="form-group">
+                            <label htmlFor="email">Email Address</label>
+                            <div className="input-wrapper">
+                                <Mail size={20} />
+                                <input
+                                    type="email"
+                                    id="email"
+                                    name="email"
+                                    placeholder="Enter your email"
+                                    value={formData.email}
+                                    onChange={handleChange}
+                                    required
+                                />
+                            </div>
+                        </div>
+
+                        <div className="form-group">
+                            <label htmlFor="phone">Phone Number</label>
+                            <div className="input-wrapper">
+                                <Phone size={20} />
+                                <input
+                                    type="tel"
+                                    id="phone"
+                                    name="phone"
+                                    placeholder="+254 712 345 678"
+                                    value={formData.phone}
+                                    onChange={handleChange}
+                                    required
+                                />
+                            </div>
+                        </div>
+
+                        <div className="form-group">
+                            <label htmlFor="location">Location</label>
+                            <div className="input-wrapper">
+                                <MapPin size={20} />
+                                <input
+                                    type="text"
+                                    id="location"
+                                    name="location"
+                                    placeholder="e.g., Kahawa Sukari, Nairobi"
+                                    value={formData.location}
+                                    onChange={handleChange}
+                                    required
+                                />
+                            </div>
+                        </div>
+
+                        <div className="form-group">
+                            <label htmlFor="password">Password</label>
+                            <div className="input-wrapper">
+                                <Lock size={20} />
+                                <input
+                                    type={showPassword ? 'text' : 'password'}
+                                    id="password"
+                                    name="password"
+                                    placeholder="Enter your password"
+                                    value={formData.password}
+                                    onChange={handleChange}
+                                    required
+                                />
+                                <button
+                                    type="button"
+                                    className="toggle-password"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                >
+                                    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                                </button>
+                            </div>
+                        </div>
+
+                        <div className="form-group">
+                            <label htmlFor="confirmPassword">Confirm Password</label>
+                            <div className="input-wrapper">
+                                <Lock size={20} />
+                                <input
+                                    type={showPassword ? 'text' : 'password'}
+                                    id="confirmPassword"
+                                    name="confirmPassword"
+                                    placeholder="Confirm your password"
+                                    value={formData.confirmPassword}
+                                    onChange={handleChange}
+                                    required
+                                />
+                            </div>
+                        </div>
+
+                        <button type="submit" className="btn btn-primary w-full" disabled={loading}>
+                            {loading ? 'Creating Account...' : 'Create Account'}
+                        </button>
+
+                        <div className="auth-footer">
+                            <p>Already have an account? <Link to="/login">Login here</Link></p>
+                        </div>
+                    </form>
                 </div>
-
-                <form onSubmit={handleSubmit} className="auth-form">
-                    {error && <div className="error-message">{error}</div>}
-
-                    <div className="form-group">
-                        <label htmlFor="name">Full Name</label>
-                        <div className="input-wrapper">
-                            <User size={20} />
-                            <input
-                                type="text"
-                                id="name"
-                                name="name"
-                                placeholder="Enter your full name"
-                                value={formData.name}
-                                onChange={handleChange}
-                                required
-                            />
-                        </div>
-                    </div>
-
-                    <div className="form-group">
-                        <label htmlFor="email">Email Address</label>
-                        <div className="input-wrapper">
-                            <Mail size={20} />
-                            <input
-                                type="email"
-                                id="email"
-                                name="email"
-                                placeholder="Enter your email"
-                                value={formData.email}
-                                onChange={handleChange}
-                                required
-                            />
-                        </div>
-                    </div>
-
-                    <div className="form-group">
-                        <label htmlFor="phone">Phone Number</label>
-                        <div className="input-wrapper">
-                            <Phone size={20} />
-                            <input
-                                type="tel"
-                                id="phone"
-                                name="phone"
-                                placeholder="+254 712 345 678"
-                                value={formData.phone}
-                                onChange={handleChange}
-                                required
-                            />
-                        </div>
-                    </div>
-
-                    <div className="form-group">
-                        <label htmlFor="location">Location</label>
-                        <div className="input-wrapper">
-                            <MapPin size={20} />
-                            <input
-                                type="text"
-                                id="location"
-                                name="location"
-                                placeholder="e.g., Kahawa Sukari, Nairobi"
-                                value={formData.location}
-                                onChange={handleChange}
-                                required
-                            />
-                        </div>
-                    </div>
-
-                    <div className="form-group">
-                        <label htmlFor="password">Password</label>
-                        <div className="input-wrapper">
-                            <Lock size={20} />
-                            <input
-                                type={showPassword ? 'text' : 'password'}
-                                id="password"
-                                name="password"
-                                placeholder="Enter your password"
-                                value={formData.password}
-                                onChange={handleChange}
-                                required
-                            />
-                            <button
-                                type="button"
-                                className="toggle-password"
-                                onClick={() => setShowPassword(!showPassword)}
-                            >
-                                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                            </button>
-                        </div>
-                    </div>
-
-                    <div className="form-group">
-                        <label htmlFor="confirmPassword">Confirm Password</label>
-                        <div className="input-wrapper">
-                            <Lock size={20} />
-                            <input
-                                type={showPassword ? 'text' : 'password'}
-                                id="confirmPassword"
-                                name="confirmPassword"
-                                placeholder="Confirm your password"
-                                value={formData.confirmPassword}
-                                onChange={handleChange}
-                                required
-                            />
-                        </div>
-                    </div>
-
-                    <button type="submit" className="btn btn-primary w-full" disabled={loading}>
-                        {loading ? 'Creating Account...' : 'Create Account'}
-                    </button>
-
-                    <div className="auth-footer">
-                        <p>Already have an account? <Link to="/login">Login here</Link></p>
-                    </div>
-                </form>
             </div>
-        </div>
+        </>
     );
 };
 

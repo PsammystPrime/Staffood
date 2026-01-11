@@ -76,7 +76,7 @@ router.post('/register', async (req, res) => {
 
         // Create JWT token
         const token = jwt.sign(
-            { id: userId, email, username, name },
+            { id: userId, email, username, name, role: 'user' },
             JWT_SECRET,
             { expiresIn: '7d' }
         );
@@ -90,7 +90,8 @@ router.post('/register', async (req, res) => {
                 name,
                 username,
                 email,
-                phone
+                phone,
+                role: 'user'
             }
         });
     } catch (error) {
@@ -138,7 +139,7 @@ router.post('/login', async (req, res) => {
 
         // Create JWT token
         const token = jwt.sign(
-            { id: user.id, email: user.email, username: user.username, name: user.name },
+            { id: user.id, email: user.email, username: user.username, name: user.name, role: user.role },
             JWT_SECRET,
             { expiresIn: '7d' }
         );
@@ -153,6 +154,7 @@ router.post('/login', async (req, res) => {
                 username: user.username,
                 email: user.email,
                 phone: user.phone,
+                role: user.role,
                 points: pointsData[0]?.points || 0
             }
         });
@@ -176,7 +178,7 @@ router.post('/admin-login', async (req, res) => {
 
         // Check if admin exists
         const [admins] = await db.query(
-            'SELECT * FROM users WHERE email = ? AND role = "admin"',
+            "SELECT * FROM users WHERE email = ? AND role = 'admin'",
             [email]
         );
 
