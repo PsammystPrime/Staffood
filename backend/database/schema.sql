@@ -170,3 +170,39 @@ INSERT INTO admin_users (username, email, password, role) VALUES
 --   (SELECT COUNT(*) FROM orders) as total_orders,
 --   (SELECT COUNT(*) FROM products WHERE is_available = TRUE) as total_products,
 --   (SELECT COALESCE(SUM(total), 0) FROM orders WHERE status = 'Completed') as total_revenue;
+
+-- ============================================
+-- MIGRATION: Add name column to users table
+-- Run this if users table already exists
+-- ============================================
+ALTER TABLE users 
+ADD COLUMN name VARCHAR(255) NOT NULL AFTER username,
+ADD COLUMN location VARCHAR(255) AFTER phone,
+ADD COLUMN points INT AFTER location,
+ADD COLUMN role ENUM('user', 'admin') NOT NULL DEFAULT 'user' AFTER location;
+
+-- Update existing users to have a name (if any exist)
+-- UPDATE users SET name = username WHERE name IS NULL OR name = '';
+
+-- ============================================
+-- ALTERNATIVE: Create users table with name column
+-- Use this if creating fresh database
+-- ============================================
+-- DROP TABLE IF EXISTS user_points;
+-- DROP TABLE IF EXISTS orders;
+-- DROP TABLE IF EXISTS users;
+
+-- CREATE TABLE users (
+--     id INT AUTO_INCREMENT PRIMARY KEY,
+--     name VARCHAR(255) NOT NULL,
+--     username VARCHAR(100) UNIQUE NOT NULL,
+--     email VARCHAR(255) UNIQUE NOT NULL,
+--     phone VARCHAR(20) UNIQUE NOT NULL,
+--     location VARCHAR(255),
+--     password VARCHAR(255) NOT NULL,
+--     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+--     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+--     INDEX idx_email (email),
+--     INDEX idx_username (username),
+--     INDEX idx_phone (phone)
+-- ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
