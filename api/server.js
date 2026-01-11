@@ -21,12 +21,12 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/products', productsRoutes);
-app.use('/api/users', usersRoutes);
-app.use('/api/cart', cartRoutes);
-app.use('/api/orders', ordersRoutes);
-app.use('/api/admin', adminRoutes);
+app.use('/auth', authRoutes);
+app.use('/products', productsRoutes);
+app.use('/users', usersRoutes);
+app.use('/cart', cartRoutes);
+app.use('/orders', ordersRoutes);
+app.use('/admin', adminRoutes);
 
 // Basic route
 app.get('/', (req, res) => {

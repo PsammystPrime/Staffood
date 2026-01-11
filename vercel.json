@@ -1,6 +1,9 @@
 {
-  "buildCommand": "npm install && npm run build --workspace=frontend",
-  "outputDirectory": "frontend/dist",
+  "functions": {
+    "api/server.js": {
+      "runtime": "nodejs18.x"
+    }
+  },
   "routes": [
     {
       "src": "^/api/(.*)",
@@ -8,7 +11,7 @@
     },
     {
       "src": "^/(.*)",
-      "dest": "/index.html"
+      "dest": "/frontend/dist/index.html"
     }
   ]
 }
