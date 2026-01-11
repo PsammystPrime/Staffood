@@ -3,6 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Package, TrendingUp, ShoppingBag, Users, LogOut, Search, Mail, Phone, MapPin, Award, Menu, X } from 'lucide-react';
 import './AdminDashboard.css';
 import './AdminUsers.css';
+import { API_URL } from '../config';
+
 
 const AdminUsers = () => {
     const navigate = useNavigate();
@@ -17,7 +19,7 @@ const AdminUsers = () => {
 
     const fetchUsers = async () => {
         try {
-            const response = await fetch('http://localhost:5000/api/users');
+            const response = await fetch(API_URL + '/api/users');
             const data = await response.json();
 
             if (data.success) {

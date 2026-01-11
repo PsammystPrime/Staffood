@@ -3,6 +3,7 @@ import Navbar from '../components/Navbar';
 import ProductCard from '../components/ProductCard';
 import Loader from '../components/Loader';
 import './Home.css';
+import { API_URL } from '../config';
 
 const Home = () => {
     const [products, setProducts] = useState([]);
@@ -14,7 +15,7 @@ const Home = () => {
 
     const fetchProducts = async () => {
         try {
-            const response = await fetch('http://localhost:5000/api/products');
+            const response = await fetch(API_URL + '/api/products');
             const data = await response.json();
 
             if (response.ok) {

@@ -4,6 +4,8 @@ import { Package, TrendingUp, ShoppingBag, Users, LogOut, Search, Eye, CheckCirc
 import Toast from '../components/Toast';
 import './AdminDashboard.css';
 import './AdminOrders.css';
+import { API_URL } from '../config';
+
 
 const AdminOrders = () => {
     const navigate = useNavigate();
@@ -21,7 +23,7 @@ const AdminOrders = () => {
 
     const fetchOrders = async () => {
         try {
-            const response = await fetch('http://localhost:5000/api/orders/admin');
+            const response = await fetch(API_URL + '/api/orders/admin');
             const data = await response.json();
             if (data.success) {
                 setOrders(data.orders);
@@ -42,7 +44,7 @@ const AdminOrders = () => {
 
     const handleStatusChange = async (orderId, newStatus) => {
         try {
-            const response = await fetch(`http://localhost:5000/api/orders/${orderId}/status`, {
+            const response = await fetch(`${API_URL}/api/orders/${orderId}/status`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ status: newStatus })

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff, Shield } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import './Auth.css';
+import { API_URL } from '../config';
 
 const AdminLogin = () => {
     const navigate = useNavigate();
@@ -28,7 +29,7 @@ const AdminLogin = () => {
         setLoading(true);
 
         try {
-            const response = await fetch('http://localhost:5000/api/auth/admin-login', {
+            const response = await fetch(`${API_URL}/api/auth/admin-login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

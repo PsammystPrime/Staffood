@@ -6,6 +6,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useShop } from '../context/ShopContext';
 import { useAuth } from '../context/AuthContext';
 import './Checkout.css';
+import { API_URL } from '../config';
 
 const Checkout = () => {
     const { user } = useAuth();
@@ -56,7 +57,7 @@ const Checkout = () => {
                 quantity: item.quantity
             }));
 
-            const response = await fetch('http://localhost:5000/api/orders', {
+            const response = await fetch(`${API_URL}/api/orders`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

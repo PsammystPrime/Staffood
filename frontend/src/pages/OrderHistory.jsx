@@ -4,6 +4,7 @@ import Loader from '../components/Loader';
 import { Package, Clock, X, MapPin } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import './OrderHistory.css';
+import { API_URL } from '../config';
 
 const OrderHistory = () => {
     const { user } = useAuth();
@@ -20,7 +21,7 @@ const OrderHistory = () => {
 
     const fetchOrders = async () => {
         try {
-            const response = await fetch(`http://localhost:5000/api/orders/user/${user.id}`);
+            const response = await fetch(`${API_URL}/api/orders/user/${user.id}`);
             const data = await response.json();
 
             if (data.success) {

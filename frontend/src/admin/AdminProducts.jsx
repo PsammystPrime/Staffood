@@ -4,6 +4,8 @@ import { Package, TrendingUp, ShoppingBag, Users, LogOut, Plus, Edit2, Trash2, S
 import Toast from '../components/Toast';
 import './AdminDashboard.css';
 import './AdminProducts.css';
+import { API_URL } from '../config';
+
 
 const AdminProducts = () => {
     const navigate = useNavigate();
@@ -30,7 +32,7 @@ const AdminProducts = () => {
 
     const fetchProducts = async () => {
         try {
-            const response = await fetch('http://localhost:5000/api/products/admin');
+            const response = await fetch(`${API_URL}/api/products/admin`);
             const data = await response.json();
             if (data.success) {
                 setProducts(data.products);
@@ -63,7 +65,7 @@ const AdminProducts = () => {
         }
 
         try {
-            const response = await fetch('http://localhost:5000/api/products', {
+            const response = await fetch(`${API_URL}/api/products`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(newProduct)
@@ -101,7 +103,7 @@ const AdminProducts = () => {
     const handleUpdateProduct = async () => {
         if (editingProduct && newProduct.name && newProduct.price) {
             try {
-                const response = await fetch(`http://localhost:5000/api/products/${editingProduct.id}`, {
+                const response = await fetch(`${API_URL}/api/products/${editingProduct.id}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -128,7 +130,7 @@ const AdminProducts = () => {
     const handleSoftDelete = async (id) => {
         if (window.confirm('Are you sure you want to mark this product as unavailable?')) {
             try {
-                const response = await fetch(`http://localhost:5000/api/products/${id}`, {
+                const response = await fetch(`${API_URL}/api/products/${id}`, {
                     method: 'DELETE'
                 });
                 if (response.ok) {
@@ -146,7 +148,7 @@ const AdminProducts = () => {
 
     const handleRestock = async (product) => {
         try {
-            const response = await fetch(`http://localhost:5000/api/products/${product.id}`, {
+            const response = await fetch(`${API_URL}/api/products/${product.id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

@@ -1,5 +1,6 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { useAuth } from './AuthContext';
+import { API_URL } from '../config';
 
 const ShopContext = createContext();
 
@@ -43,7 +44,7 @@ export const ShopProvider = ({ children }) => {
     const fetchUserCart = async () => {
         try {
             setLoading(true);
-            const response = await fetch(`http://localhost:5000/api/cart/${user.id}`);
+            const response = await fetch(`${API_URL}/api/cart/${user.id}`);
             const data = await response.json();
 
             if (data.success) {
@@ -79,7 +80,7 @@ export const ShopProvider = ({ children }) => {
 
             // API Call
             try {
-                await fetch('http://localhost:5000/api/cart/add', {
+                await fetch(`${API_URL}/api/cart/add`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ userId: user.id, productId: product.id, quantity: 1 })
@@ -108,7 +109,7 @@ export const ShopProvider = ({ children }) => {
         if (user) {
             setCart(prev => prev.filter(item => item.id !== productId));
             try {
-                await fetch('http://localhost:5000/api/cart/remove', {
+                await fetch(`${API_URL}/api/cart/remove`, {
                     method: 'DELETE',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ userId: user.id, productId })
@@ -136,7 +137,7 @@ export const ShopProvider = ({ children }) => {
             }));
 
             try {
-                await fetch('http://localhost:5000/api/cart/update', {
+                await fetch(`${API_URL}/api/cart/update`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ userId: user.id, productId, quantity: newQuantity })
@@ -158,7 +159,7 @@ export const ShopProvider = ({ children }) => {
         setCart([]);
         if (user) {
             try {
-                await fetch('http://localhost:5000/api/cart/clear', {
+                await fetch(`${API_URL}/api/cart/clear`, {
                     method: 'DELETE',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ userId: user.id })

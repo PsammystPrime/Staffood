@@ -4,6 +4,7 @@ import { User, Phone, Mail, MapPin, Award, Edit2, Save } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import Loader from '../components/Loader';
 import './Profile.css';
+import { API_URL } from '../config';
 
 const Profile = () => {
     const { user: authUser, updateUser } = useAuth();
@@ -27,7 +28,7 @@ const Profile = () => {
 
     const fetchProfile = async () => {
         try {
-            const response = await fetch(`http://localhost:5000/api/users/profile/${authUser.id}`);
+            const response = await fetch(`${API_URL}/api/users/profile/${authUser.id}`);
             const data = await response.json();
 
             if (response.ok) {
@@ -47,7 +48,7 @@ const Profile = () => {
 
     const handleSave = async () => {
         try {
-            const response = await fetch(`http://localhost:5000/api/users/profile/${authUser.id}`, {
+            const response = await fetch(`${API_URL}/api/users/profile/${authUser.id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

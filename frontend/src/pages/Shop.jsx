@@ -4,6 +4,7 @@ import ProductCard from '../components/ProductCard';
 import Loader from '../components/Loader';
 import { Filter } from 'lucide-react';
 import './Shop.css';
+import { API_URL } from '../config';
 
 const Shop = () => {
     const [category, setCategory] = useState('All');
@@ -19,8 +20,8 @@ const Shop = () => {
         try {
             setLoading(true);
             const url = category === 'All'
-                ? 'http://localhost:5000/api/products'
-                : `http://localhost:5000/api/products?category=${category}`;
+                ? `${API_URL}/api/products`
+                : `${API_URL}/api/products?category=${category}`;
 
             const response = await fetch(url);
             const data = await response.json();
