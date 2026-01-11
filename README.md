@@ -14,16 +14,19 @@ Staffoods is a modern e-commerce platform for selling fresh fruits, juices, and 
 #### User-Facing Pages
 1. **Home Page** (`/`)
    - Hero section with custom background image
-   - Featured products display
+   - Featured products display (fetched from API)
    - Smooth scroll to shop section
    - Responsive design
+   - **✅ Navbar included**
 
 2. **Shop Page** (`/products`)
    - Category filtering (All, Fruits, Juices, Groceries)
    - Alphabetical product sorting
-   - Search functionality
+   - **✅ Products fetched from MySQL database via API**
+   - Loading, error, and empty states
    - 2-column grid on mobile
    - Product cards with hover effects
+   - **✅ Navbar included**
 
 3. **Cart Page** (`/cart`)
    - Add/remove items
@@ -32,23 +35,36 @@ Staffoods is a modern e-commerce platform for selling fresh fruits, juices, and 
    - Subtotal and total calculation
    - Empty cart state
    - Responsive layout
+   - **✅ Navbar included**
 
-4. **Checkout Page** (`/checkout`)
+4. **Checkout Page** (`/checkout`) - **🔒 Protected Route**
    - M-Pesa phone number input
    - Simulated STK push
    - Order confirmation
    - Cart clearing on success
+   - **✅ Navbar included**
 
-5. **Order History** (`/history`)
+5. **Order History** (`/history`) - **🔒 Protected Route**
    - Mock order display
    - Order status tracking
    - Date and amount information
+   - **✅ Navbar included**
 
-6. **Profile Page** (`/profile`)
-   - User information display
-   - Editable fields (name, phone, email, location)
+6. **Profile Page** (`/profile`) - **🔒 Protected Route**
+   - **✅ User data fetched from MySQL database**
+   - Editable fields (username, email, phone)
    - Points system display
-   - Edit/save functionality
+   - Total orders and spending statistics
+   - Edit/save functionality with API integration
+   - **✅ Navbar included**
+
+7. **Authentication Pages**
+   - **Login** (`/login`) - JWT authentication
+   - **Register** (`/register`) - User registration with password hashing
+   - **Admin Login** (`/admin-login`) - Separate admin authentication
+   - Responsive design with brand colors
+   - Password visibility toggle
+   - Error handling and validation
 
 #### Admin Panel
 1. **Dashboard** (`/admin`)
@@ -56,6 +72,7 @@ Staffoods is a modern e-commerce platform for selling fresh fruits, juices, and 
    - Recent orders table
    - Horizontal scrollable table on mobile
    - Color-coded stat cards
+   - Mobile header with menu toggle
 
 2. **Products Management** (`/admin/products`)
    - View all products in table
@@ -65,6 +82,7 @@ Staffoods is a modern e-commerce platform for selling fresh fruits, juices, and 
    - Search functionality
    - Category filtering (All, Fruits, Juices, Groceries)
    - CRUD operations
+   - Mobile responsive with header
 
 3. **Orders Management** (`/admin/orders`)
    - View all orders in card layout
@@ -72,34 +90,68 @@ Staffoods is a modern e-commerce platform for selling fresh fruits, juices, and 
    - Search by order ID, customer, phone
    - Process/complete order actions
    - Status badges
+   - Mobile responsive with header
 
 4. **Users Management** (`/admin/users`)
    - View all registered users
    - User details (email, phone, location)
    - Points and spending statistics
    - Search functionality
+   - Mobile responsive with header
 
 #### Components
 - **Navbar**: Fixed navigation with mobile hamburger menu
+  - **✅ Conditional rendering based on authentication**
+  - **✅ Login/Signup buttons for unauthenticated users**
+  - **✅ Profile icon and Orders link for authenticated users**
+  - **✅ Logout functionality**
 - **ProductCard**: Reusable product display component
+- **ProtectedRoute**: Authentication guard for protected pages
 - **Mobile Menu**: Sliding sidebar with overlay
 
 #### State Management
 - **ShopContext**: Global cart state using React Context API
-- **LocalStorage**: Cart persistence across sessions
+- **AuthContext**: **✅ JWT-based authentication state management**
+  - User login/logout
+  - Token storage in localStorage
+  - Persistent authentication
+  - User data management
+- **LocalStorage**: Cart and auth persistence across sessions
 - **Functions**: addToCart, removeFromCart, updateQuantity, clearCart, getCartTotal, getCartCount
 
-### Backend (Express.js + MySQL)
-- Basic Express server setup
-- CORS enabled
-- Body parser middleware
-- Environment variables support (.env)
-- Port: 5000 (configurable)
+### Backend (Express.js + MySQL) - **✅ FULLY IMPLEMENTED**
 
-### Database (MySQL)
-- **Users Table**: id, username, email, phone, password, created_at, updated_at
-- Products table (to be created)
-- Orders table (planned)
+#### API Endpoints
+**Authentication** (`/api/auth`)
+- ✅ `POST /api/auth/register` - User registration with bcrypt hashing
+- ✅ `POST /api/auth/login` - User login with JWT token generation
+- ✅ `POST /api/auth/admin-login` - Admin authentication
+
+**Products** (`/api/products`) - **✅ NEW**
+- ✅ `GET /api/products` - Fetch all products (with optional category filter)
+- ✅ `GET /api/products/:id` - Fetch single product
+- ✅ `POST /api/products` - Create product (admin)
+- ✅ `PUT /api/products/:id` - Update product (admin)
+- ✅ `DELETE /api/products/:id` - Delete product (admin)
+
+**Users** (`/api/users`) - **✅ NEW**
+- ✅ `GET /api/users/profile/:userId` - Fetch user profile with points
+- ✅ `PUT /api/users/profile/:userId` - Update user profile
+
+#### Database Schema (MySQL)
+- **✅ users** - User accounts (id, username, email, phone, password, created_at, updated_at)
+- **✅ products** - Product catalog (id, name, category, price, image, description, stock_quantity, is_available)
+- **✅ user_points** - Loyalty program (user_id, points, total_spent, total_orders)
+- **✅ admin_users** - Admin accounts (id, username, email, password, role, is_active)
+- **📋 orders** - Order tracking (planned)
+- **📋 order_items** - Order details (planned)
+
+#### Security Features
+- ✅ Password hashing with bcrypt
+- ✅ JWT token authentication (7-day expiration)
+- ✅ Protected routes with authentication middleware
+- ✅ CORS enabled for frontend communication
+- ✅ Environment variables for sensitive data
 
 ### Styling & Responsiveness
 - Custom CSS with utility classes
@@ -123,64 +175,58 @@ Staffoods is a modern e-commerce platform for selling fresh fruits, juices, and 
 - [x] Product catalog with 28+ items
 - [x] Shopping cart functionality
 - [x] Admin panel (Dashboard, Products, Orders, Users)
-- [x] Mobile responsiveness
+- [x] Mobile responsiveness with headers on all pages
 - [x] Category filtering
 - [x] Search functionality
 - [x] Optional delivery fee
 - [x] Profile management
-- [x] Basic Express server
+- [x] **JWT-based authentication system**
+- [x] **User registration and login**
+- [x] **Admin authentication**
+- [x] **Protected routes (/profile, /history, /checkout)**
+- [x] **MySQL database integration**
+- [x] **Products API (CRUD operations)**
+- [x] **Users API (profile management)**
+- [x] **Products fetched from database**
+- [x] **User profile data from database**
+- [x] **Conditional navbar rendering**
+- [x] **Persistent authentication**
 
 ### 🔄 In Progress
-- [ ] MySQL database integration
-- [ ] User authentication (login/registration)
-- [ ] Admin authentication
-- [ ] Backend API endpoints
+- [ ] Orders API implementation
 - [ ] M-Pesa payment integration
+- [ ] Admin panel API integration
 
 ## 📝 Next Steps (Immediate)
 
-### 1. Database Schema Creation
-- Create products table
-- Create orders table
-- Create order_items table
-- Set up relationships
-
-### 2. Authentication System
-- User registration endpoint
-- User login endpoint
-- Admin login endpoint
-- JWT token generation
-- Password hashing (bcrypt)
-- Protected routes
-
-### 3. Backend API Development
-- **Products API**
-  - GET /api/products (fetch all)
-  - GET /api/products/:id (fetch single)
-  - POST /api/products (admin only)
-  - PUT /api/products/:id (admin only)
-  - DELETE /api/products/:id (admin only)
-
-- **Orders API**
+### 1. Orders Management Backend
+- Create orders API endpoints
   - POST /api/orders (create order)
   - GET /api/orders (admin - all orders)
   - GET /api/orders/user/:userId (user orders)
   - PUT /api/orders/:id/status (update status)
+- Connect frontend checkout to orders API
+- Implement order history from database
 
-- **Users API**
-  - POST /api/auth/register
-  - POST /api/auth/login
-  - POST /api/auth/admin-login
-  - GET /api/users/profile
-  - PUT /api/users/profile
+### 2. Admin Panel Backend Integration
+- Connect admin dashboard to real statistics
+- Integrate admin products page with products API
+- Connect admin orders page to orders API
+- Link admin users page to users API
+- Add authentication middleware for admin routes
 
-### 4. Frontend Integration
-- Connect Shop page to products API
-- Connect Cart to orders API
-- Implement real authentication
-- Add loading states
-- Error handling
-- Toast notifications
+### 3. M-Pesa Integration
+- Daraja API setup
+- STK Push implementation
+- Payment verification
+- Callback handling
+- Order status updates
+
+### 4. Image Management
+- Set up image upload functionality
+- Store product images in public folder
+- Update image paths in database
+- Implement image optimization
 
 ## 🔮 Future Enhancements
 

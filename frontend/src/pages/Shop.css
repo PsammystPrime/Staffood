@@ -35,4 +35,27 @@
         justify-content: center;
         max-width: 100%;
     }
+
+    .filter-btn {
+        font-size: 0.875rem;
+        padding: 0.625rem 1rem;
+    }
+}
+
+.loading-state,
+.error-state,
+.empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--color-text-light);
+}
+
+.error-state {
+    color: #EF4444;
+}
+
+.loading-state p,
+.error-state p,
+.empty-state p {
+    font-size: 1.125rem;
 }

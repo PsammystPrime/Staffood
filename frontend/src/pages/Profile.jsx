@@ -1,27 +1,77 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import { User, Phone, Mail, MapPin, Award, Edit2, Save } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 import './Profile.css';
 
 const Profile = () => {
+    const { user: authUser, updateUser } = useAuth();
     const [isEditing, setIsEditing] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [profile, setProfile] = useState({
-        name: 'John Doe',
-        phone: '+254 712 345 678',
-        email: 'john.doe@example.com',
-        location: 'Kahawa Sukari, Nairobi',
-        points: 1250
+        username: '',
+        phone: '',
+        email: '',
+        points: 0,
+        total_spent: 0,
+        total_orders: 0
     });
-
     const [editedProfile, setEditedProfile] = useState({ ...profile });
+
+    useEffect(() => {
+        if (authUser) {
+            fetchProfile();
+        }
+    }, [authUser]);
+
+    const fetchProfile = async () => {
+        try {
+            const response = await fetch(`http://localhost:5000/api/users/profile/${authUser.id}`);
+            const data = await response.json();
+
+            if (response.ok) {
+                setProfile(data.user);
+                setEditedProfile(data.user);
+            }
+        } catch (err) {
+            console.error('Error fetching profile:', err);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const handleEdit = () => {
         setIsEditing(true);
     };
 
-    const handleSave = () => {
-        setProfile(editedProfile);
-        setIsEditing(false);
+    const handleSave = async () => {
+        try {
+            const response = await fetch(`http://localhost:5000/api/users/profile/${authUser.id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    username: editedProfile.username,
+                    email: editedProfile.email,
+                    phone: editedProfile.phone
+                }),
+            });
+
+            if (response.ok) {
+                setProfile(editedProfile);
+                // Update auth context with new user data
+                updateUser({
+                    ...authUser,
+                    username: editedProfile.username,
+                    email: editedProfile.email,
+                    phone: editedProfile.phone
+                });
+                setIsEditing(false);
+            }
+        } catch (err) {
+            console.error('Error updating profile:', err);
+        }
     };
 
     const handleCancel = () => {
@@ -33,6 +83,17 @@ const Profile = () => {
         setEditedProfile({ ...editedProfile, [field]: value });
     };
 
+    if (loading) {
+        return (
+            <>
+                <Navbar />
+                <div className="container section">
+                    <p>Loading profile...</p>
+                </div>
+            </>
+        );
+    }
+
     return (
         <>
             <Navbar />
@@ -41,7 +102,7 @@ const Profile = () => {
                     <div className="profile-avatar">
                         <User size={60} />
                     </div>
-                    <h2 className="profile-name">{profile.name}</h2>
+                    <h2 className="profile-name">{profile.username}</h2>
                     <div className="points-badge">
                         <Award size={20} />
                         <span>{profile.points} Points</span>
@@ -72,16 +133,16 @@ const Profile = () => {
                                 <User size={20} />
                             </div>
                             <div className="detail-content">
-                                <label>Full Name</label>
+                                <label>Username</label>
                                 {isEditing ? (
                                     <input
                                         type="text"
-                                        value={editedProfile.name}
-                                        onChange={(e) => handleChange('name', e.target.value)}
+                                        value={editedProfile.username}
+                                        onChange={(e) => handleChange('username', e.target.value)}
                                         className="form-input"
                                     />
                                 ) : (
-                                    <p>{profile.name}</p>
+                                    <p>{profile.username}</p>
                                 )}
                             </div>
                         </div>
@@ -126,20 +187,21 @@ const Profile = () => {
 
                         <div className="detail-item">
                             <div className="detail-icon">
-                                <MapPin size={20} />
+                                <Award size={20} />
                             </div>
                             <div className="detail-content">
-                                <label>Location</label>
-                                {isEditing ? (
-                                    <input
-                                        type="text"
-                                        value={editedProfile.location}
-                                        onChange={(e) => handleChange('location', e.target.value)}
-                                        className="form-input"
-                                    />
-                                ) : (
-                                    <p>{profile.location}</p>
-                                )}
+                                <label>Total Orders</label>
+                                <p>{profile.total_orders} orders</p>
+                            </div>
+                        </div>
+
+                        <div className="detail-item">
+                            <div className="detail-icon">
+                                <Award size={20} />
+                            </div>
+                            <div className="detail-content">
+                                <label>Total Spent</label>
+                                <p>Ksh {profile.total_spent?.toLocaleString() || 0}</p>
                             </div>
                         </div>
                     </div>

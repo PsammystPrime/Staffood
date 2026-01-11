@@ -12,8 +12,12 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // Routes
 const authRoutes = require('./routes/auth');
+const productsRoutes = require('./routes/products');
+const usersRoutes = require('./routes/users');
 
 app.use('/api/auth', authRoutes);
+app.use('/api/products', productsRoutes);
+app.use('/api/users', usersRoutes);
 
 // Basic route
 app.get('/', (req, res) => {

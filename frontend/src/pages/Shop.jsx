@@ -1,23 +1,43 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import ProductCard from '../components/ProductCard';
-import { PRODUCTS } from '../data/products';
 import { Filter } from 'lucide-react';
 import './Shop.css';
 
 const Shop = () => {
     const [category, setCategory] = useState('All');
+    const [products, setProducts] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
 
-    const filteredProducts = useMemo(() => {
-        let items = PRODUCTS;
-
-        if (category !== 'All') {
-            items = items.filter(product => product.category === category);
-        }
-
-        // Sort alphabetically by name
-        return [...items].sort((a, b) => a.name.localeCompare(b.name));
+    useEffect(() => {
+        fetchProducts();
     }, [category]);
+
+    const fetchProducts = async () => {
+        try {
+            setLoading(true);
+            const url = category === 'All'
+                ? 'http://localhost:5000/api/products'
+                : `http://localhost:5000/api/products?category=${category}`;
+
+            const response = await fetch(url);
+            const data = await response.json();
+
+            if (response.ok) {
+                // Sort alphabetically by name
+                const sortedProducts = data.products.sort((a, b) => a.name.localeCompare(b.name));
+                setProducts(sortedProducts);
+            } else {
+                setError(data.message || 'Failed to fetch products');
+            }
+        } catch (err) {
+            setError('Network error. Please try again.');
+            console.error('Error fetching products:', err);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <>
@@ -31,6 +51,7 @@ const Shop = () => {
                             className={`filter-btn ${category === 'All' ? 'active' : ''}`}
                             onClick={() => setCategory('All')}
                         >
+                            <Filter size={18} />
                             All
                         </button>
                         <button
@@ -54,16 +75,23 @@ const Shop = () => {
                     </div>
                 </div>
 
-                {filteredProducts.length > 0 ? (
-                    <div className="grid grid-cols-3">
-                        {filteredProducts.map(product => (
-                            <ProductCard key={product.id} product={product} />
-                        ))}
+                {loading ? (
+                    <div className="loading-state">
+                        <p>Loading products...</p>
+                    </div>
+                ) : error ? (
+                    <div className="error-state">
+                        <p>{error}</p>
+                    </div>
+                ) : products.length === 0 ? (
+                    <div className="empty-state">
+                        <p>No products found in this category.</p>
                     </div>
                 ) : (
-                    <div className="text-center py-12">
-                        <p className="text-gray-500 text-xl">No products found in this category.</p>
-                        <button className="btn btn-outline mt-4" onClick={() => setCategory('All')}>View All Products</button>
+                    <div className="products-grid">
+                        {products.map(product => (
+                            <ProductCard key={product.id} product={product} />
+                        ))}
                     </div>
                 )}
             </div>
