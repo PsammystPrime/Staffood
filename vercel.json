@@ -1,14 +1,14 @@
 {
-  "buildCommand": "npm run build --workspace=frontend",
+  "buildCommand": "npm install && npm run build --workspace=frontend",
   "outputDirectory": "frontend/dist",
-  "rewrites": [
+  "routes": [
     {
-      "source": "/api/:match*",
-      "destination": "/api/server.js"
+      "src": "^/api/(.*)",
+      "dest": "/api/server.js"
     },
     {
-      "source": "/(.*)",
-      "destination": "/index.html"
+      "src": "^/(.*)",
+      "dest": "/index.html"
     }
   ]
 }
