@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
-import { fileURLToPath } from 'url';
+import ip from 'ip';
 
 import authRoutes from './routes/auth.js';
 import productsRoutes from './routes/products.js';
@@ -39,14 +39,15 @@ app.use((err, req, res, next) => {
     res.status(500).json({ message: 'Something went wrong!' });
 });
 
-const PORT = process.env.PORT || 5000;
+if (process.env.NODE_ENV !== 'production') {
+    const PORT = process.env.PORT || 5000;
+    const HOST = '0.0.0.0'; // Listen on all network interfaces
 
-// Determine if running directly
-const __filename = fileURLToPath(import.meta.url);
-if (process.argv[1] === __filename) {
-    app.listen(PORT, () => {
-        console.log(`🚀 Server running on port ${PORT}`);
+    app.listen(PORT, HOST, () => {
+        console.log(`Server running on http://localhost:${PORT}`);
+        console.log(`Accessible on your network at http://${ip.address()}:${PORT}`);
     });
 }
 
+// Export the Express app for Vercel serverless
 export default app;
