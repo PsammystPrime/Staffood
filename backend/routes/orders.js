@@ -109,7 +109,7 @@ router.get('/user/:userId', async (req, res) => {
         // but for simplicity and clarity here, we'll map.
         const ordersWithItems = await Promise.all(orders.map(async (order) => {
             const [items] = await db.query(
-                'SELECT product_name, quantity FROM order_items WHERE order_id = ?',
+                'SELECT product_name, quantity, price, subtotal FROM order_items WHERE order_id = ?',
                 [order.id]
             );
             return {

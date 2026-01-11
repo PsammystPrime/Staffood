@@ -123,12 +123,16 @@
     left: 1rem;
     color: #9CA3AF;
     pointer-events: none;
+    z-index: 10;
+    /* Center vertically */
+    top: 50%;
+    transform: translateY(-50%);
 }
 
 .form-input {
     width: 100%;
-    padding: 0.75rem 1rem 0.75rem 2.75rem;
-    /* Space for icon */
+    padding: 0.75rem 1rem 0.75rem 3rem;
+    /* Increased padding */
     border: 1px solid #D1D5DB;
     border-radius: 0.5rem;
     font-size: 0.95rem;

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import Loader from '../components/Loader';
 import { CheckCircle, MapPin, Phone, ChevronRight, Store, Truck } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useShop } from '../context/ShopContext';
 import { useAuth } from '../context/AuthContext';
 import './Checkout.css';
@@ -11,13 +11,18 @@ const Checkout = () => {
     const { user } = useAuth();
     const { cart, getCartTotal, clearCart } = useShop();
     const navigate = useNavigate();
+    const locationState = useLocation().state;
 
-    const [phone, setPhone] = useState('');
-    const [location, setLocation] = useState('');
+    // Initialize isDelivery based on passed state, default to true
+    const [isDelivery, setIsDelivery] = useState(locationState?.includeDelivery !== false);
+
+    // Initialize phone and location directly from user object if available
+    const [phone, setPhone] = useState(user?.phone || '');
+    const [location, setLocation] = useState(user?.location || "Kahawa Sukari, Avenue 1");
     const [notes, setNotes] = useState('');
-    const [isDelivery, setIsDelivery] = useState(true); // Default to delivery
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+
 
     const subtotal = getCartTotal();
     const deliveryFee = isDelivery ? 100 : 0;
@@ -29,9 +34,10 @@ const Checkout = () => {
             return;
         }
 
-        if (user.phone) setPhone(user.phone);
-        if (user.location) setLocation(user.location);
-    }, [user, navigate]);
+        // Only set if state was empty (prevents overwriting user typing if re-renders happen)
+        if (!phone && user.phone) setPhone(user.phone);
+        if (!location && user.location) setLocation(user.location);
+    }, [user, navigate, phone, location]);
 
     const handlePayment = async (e) => {
         e.preventDefault();
@@ -102,10 +108,13 @@ const Checkout = () => {
                                     <span>Subtotal ({cart.length} items)</span>
                                     <span>Ksh {subtotal.toLocaleString()}</span>
                                 </div>
-                                <div className="summary-row">
-                                    <span>Delivery Fee</span>
-                                    <span>{isDelivery ? `Ksh ${deliveryFee}` : 'Free (Pickup)'}</span>
-                                </div>
+                                {/* Only show delivery fee row if delivery is selected */}
+                                {isDelivery && (
+                                    <div className="summary-row">
+                                        <span>Delivery Fee</span>
+                                        <span>Ksh {deliveryFee}</span>
+                                    </div>
+                                )}
                                 <div className="summary-total">
                                     <span>Total to Pay</span>
                                     <span>Ksh {total.toLocaleString()}</span>
@@ -119,7 +128,7 @@ const Checkout = () => {
 
                         {/* Delivery Details Form */}
                         <div className="delivery-form-card">
-                            <h3 className="card-header">Delivery Option</h3>
+                            <h3 className="card-header">Delivery & Payment</h3>
 
                             {/* Delivery Toggle */}
                             <div className="delivery-toggle-container mb-6">
@@ -149,9 +158,9 @@ const Checkout = () => {
                                             <div className="input-icon">
                                                 <MapPin size={18} />
                                             </div>
+
                                             <input
                                                 type="text"
-                                                placeholder={user?.location || "e.g. Kahawa Sukari, Avenue 1"}
                                                 className="form-input"
                                                 value={location}
                                                 onChange={e => setLocation(e.target.value)}

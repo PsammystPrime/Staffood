@@ -90,8 +90,13 @@ const Cart = () => {
                                 <span>Ksh {total}</span>
                             </div>
 
-                            <Link to="/checkout" className="btn btn-primary w-full">
-                                Proceed to M-Pesa Checkout <ArrowRight size={18} />
+                            <Link
+                                to="/checkout"
+                                state={{ includeDelivery }}
+                                className="btn btn-primary w-full flex justify-between items-center px-6"
+                            >
+                                <span>Proceed to M-Pesa Checkout</span>
+                                <ArrowRight size={18} />
                             </Link>
                         </div>
                     </div>

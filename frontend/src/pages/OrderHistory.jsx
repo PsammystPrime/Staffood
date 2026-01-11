@@ -144,19 +144,34 @@ const OrderHistory = () => {
                                 )}
 
                                 <div className="items-list">
-                                    <h4 className="font-bold mb-2">Items</h4>
+                                    <h4 className="font-bold mb-3">Items</h4>
                                     {selectedOrder.items && selectedOrder.items.map((item, index) => (
                                         <div key={index} className="item-row">
                                             <span className="item-name">{item.product_name}</span>
-                                            <span className="item-qty">x{item.quantity}</span>
+                                            <div className="item-details-right">
+                                                <span className="item-qty">x{item.quantity}</span>
+                                                <span className="item-price">
+                                                    Ksh {item.price ? parseFloat(item.price).toLocaleString() : '-'}
+                                                </span>
+                                            </div>
                                         </div>
                                     ))}
                                 </div>
                             </div>
 
-                            <div className="modal-footer">
-                                <span className="total-label">Total Amount</span>
-                                <span className="total-amount">Ksh {parseFloat(selectedOrder.total).toLocaleString()}</span>
+                            <div className="modal-footer flex-col items-stretch gap-2">
+                                <div className="flex justify-between text-sm text-gray-600 mb-1">
+                                    <span>Subtotal</span>
+                                    <span>Ksh {parseFloat(selectedOrder.subtotal).toLocaleString()}</span>
+                                </div>
+                                <div className="flex justify-between text-sm text-gray-600 mb-2 border-b border-gray-100 pb-2">
+                                    <span>Delivery Fee</span>
+                                    <span>Ksh {parseFloat(selectedOrder.delivery_fee || 0).toLocaleString()}</span>
+                                </div>
+                                <div className="flex justify-between items-center pt-1">
+                                    <span className="total-label text-lg">Total Amount</span>
+                                    <span className="total-amount text-xl">Ksh {parseFloat(selectedOrder.total).toLocaleString()}</span>
+                                </div>
                             </div>
                         </div>
                     </div>
