@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Package, ShoppingBag, Users, DollarSign, TrendingUp, LogOut, Menu, X } from 'lucide-react';
 import './AdminDashboard.css';
@@ -6,20 +6,41 @@ import './AdminDashboard.css';
 const AdminDashboard = () => {
     const navigate = useNavigate();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
-    // Mock data - will be replaced with API calls
-    const [stats] = useState({
-        totalRevenue: 125400,
-        totalOrders: 342,
-        totalUsers: 156,
-        totalProducts: 48
+    const [stats, setStats] = useState({
+        totalRevenue: 0,
+        totalOrders: 0,
+        totalUsers: 0,
+        totalProducts: 0
     });
+    const [recentOrders, setRecentOrders] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [adminName, setAdminName] = useState('Admin');
 
-    const [recentOrders] = useState([
-        { id: 'ORD-001', customer: 'John Doe', amount: 1400, status: 'Completed', date: '2023-12-20' },
-        { id: 'ORD-002', customer: 'Jane Smith', amount: 850, status: 'Pending', date: '2023-12-20' },
-        { id: 'ORD-003', customer: 'Mike Johnson', amount: 2100, status: 'Completed', date: '2023-12-19' },
-    ]);
+    useEffect(() => {
+        // Get admin name
+        const adminData = localStorage.getItem('admin');
+        if (adminData) {
+            const admin = JSON.parse(adminData);
+            setAdminName(admin.name || admin.username || 'Admin');
+        }
+
+        fetchStats();
+    }, []);
+
+    const fetchStats = async () => {
+        try {
+            const response = await fetch('http://localhost:5000/api/admin/stats');
+            const data = await response.json();
+            if (data.success) {
+                setStats(data.stats);
+                setRecentOrders(data.recentOrders);
+            }
+        } catch (error) {
+            console.error('Error fetching stats:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const handleLogout = () => {
         localStorage.removeItem('adminToken');
@@ -80,6 +101,7 @@ const AdminDashboard = () => {
             <main className="admin-main">
                 <header className="admin-header">
                     <h1>Dashboard Overview</h1>
+                    <p className="text-gray-600">Welcome back, {adminName}</p>
                 </header>
 
                 <div className="stats-grid">
@@ -138,19 +160,25 @@ const AdminDashboard = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {recentOrders.map(order => (
-                                    <tr key={order.id}>
-                                        <td className="order-id">{order.id}</td>
-                                        <td>{order.customer}</td>
-                                        <td>Ksh {order.amount}</td>
-                                        <td>
-                                            <span className={`status-badge ${order.status.toLowerCase()}`}>
-                                                {order.status}
-                                            </span>
-                                        </td>
-                                        <td>{order.date}</td>
+                                {recentOrders.length > 0 ? (
+                                    recentOrders.map(order => (
+                                        <tr key={order.id}>
+                                            <td className="order-id">#{order.id}</td>
+                                            <td>{order.customer || 'Guest'}</td>
+                                            <td>Ksh {order.amount.toLocaleString()}</td>
+                                            <td>
+                                                <span className={`status-badge ${order.status.toLowerCase()}`}>
+                                                    {order.status}
+                                                </span>
+                                            </td>
+                                            <td>{order.date}</td>
+                                        </tr>
+                                    ))
+                                ) : (
+                                    <tr>
+                                        <td colSpan="5" className="text-center py-4">No recent orders</td>
                                     </tr>
-                                ))}
+                                )}
                             </tbody>
                         </table>
                     </div>

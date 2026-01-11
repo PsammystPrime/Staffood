@@ -195,11 +195,8 @@ router.post('/admin-login', async (req, res) => {
             return res.status(401).json({ message: 'Invalid admin credentials' });
         }
 
-        // Update last login
-        await db.query(
-            'UPDATE admin_users SET last_login = NOW() WHERE id = ?',
-            [admin.id]
-        );
+        // Update last login (optional, skipping for now to avoid table issues)
+        // await db.query('UPDATE users SET updated_at = NOW() WHERE id = ?', [admin.id]);
 
         // Create JWT token
         const token = jwt.sign(
@@ -214,6 +211,7 @@ router.post('/admin-login', async (req, res) => {
             token,
             admin: {
                 id: admin.id,
+                name: admin.name,
                 username: admin.username,
                 email: admin.email,
                 role: admin.role

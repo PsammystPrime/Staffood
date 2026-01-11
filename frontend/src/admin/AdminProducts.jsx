@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Package, TrendingUp, ShoppingBag, Users, LogOut, Plus, Edit2, Trash2, Search, Menu, X, RefreshCw } from 'lucide-react';
+import Toast from '../components/Toast';
 import './AdminDashboard.css';
 import './AdminProducts.css';
 
@@ -13,6 +14,7 @@ const AdminProducts = () => {
     const [isAddingProduct, setIsAddingProduct] = useState(false);
     const [editingProduct, setEditingProduct] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [toast, setToast] = useState(null);
     const [newProduct, setNewProduct] = useState({
         name: '',
         category: 'Fruits',
@@ -28,7 +30,6 @@ const AdminProducts = () => {
 
     const fetchProducts = async () => {
         try {
-            // Fetch all products (admin view)
             const response = await fetch('http://localhost:5000/api/products/admin');
             const data = await response.json();
             if (data.success) {
@@ -36,6 +37,7 @@ const AdminProducts = () => {
             }
         } catch (error) {
             console.error('Error fetching products:', error);
+            setToast({ message: 'Failed to fetch products', type: 'error' });
         } finally {
             setLoading(false);
         }
@@ -64,12 +66,16 @@ const AdminProducts = () => {
                 });
 
                 if (response.ok) {
-                    fetchProducts(); // Refresh list
+                    fetchProducts();
                     setNewProduct({ name: '', category: 'Fruits', price: '', image: '', description: '', stock_quantity: 0 });
                     setIsAddingProduct(false);
+                    setToast({ message: 'Product added successfully', type: 'success' });
+                } else {
+                    setToast({ message: 'Failed to add product', type: 'error' });
                 }
             } catch (error) {
                 console.error('Error adding product:', error);
+                setToast({ message: 'Error adding product', type: 'error' });
             }
         }
     };
@@ -83,7 +89,7 @@ const AdminProducts = () => {
             image: product.image,
             description: product.description || '',
             stock_quantity: product.stock_quantity || 0,
-            is_available: product.is_available // Keep track of availability
+            is_available: product.is_available
         });
     };
 
@@ -103,9 +109,13 @@ const AdminProducts = () => {
                     fetchProducts();
                     setEditingProduct(null);
                     setNewProduct({ name: '', category: 'Fruits', price: '', image: '', description: '', stock_quantity: 0 });
+                    setToast({ message: 'Product updated successfully', type: 'success' });
+                } else {
+                    setToast({ message: 'Failed to update product', type: 'error' });
                 }
             } catch (error) {
                 console.error('Error updating product:', error);
+                setToast({ message: 'Error updating product', type: 'error' });
             }
         }
     };
@@ -113,28 +123,30 @@ const AdminProducts = () => {
     const handleSoftDelete = async (id) => {
         if (window.confirm('Are you sure you want to mark this product as unavailable?')) {
             try {
-                // DELETE method is mapped to Soft Delete in backend now
                 const response = await fetch(`http://localhost:5000/api/products/${id}`, {
                     method: 'DELETE'
                 });
                 if (response.ok) {
                     fetchProducts();
+                    setToast({ message: 'Product marked as unavailable', type: 'success' });
+                } else {
+                    setToast({ message: 'Failed to update product status', type: 'error' });
                 }
             } catch (error) {
                 console.error('Error deleting product:', error);
+                setToast({ message: 'Error updating product status', type: 'error' });
             }
         }
     };
 
     const handleRestock = async (product) => {
         try {
-            // Use PUT to update is_available to true
             const response = await fetch(`http://localhost:5000/api/products/${product.id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    name: product.name, // Required fields must be sent or backend validation fails?
-                    category: product.category, // Backend updates all fields provided.
+                    name: product.name,
+                    category: product.category,
                     price: product.price,
                     image: product.image,
                     description: product.description,
@@ -145,9 +157,13 @@ const AdminProducts = () => {
 
             if (response.ok) {
                 fetchProducts();
+                setToast({ message: 'Product restocked successfully', type: 'success' });
+            } else {
+                setToast({ message: 'Failed to restock product', type: 'error' });
             }
         } catch (error) {
             console.error('Error restocking product:', error);
+            setToast({ message: 'Error restocking product', type: 'error' });
         }
     };
 
@@ -159,6 +175,12 @@ const AdminProducts = () => {
 
     return (
         <div className="admin-container">
+            {toast && <Toast
+                message={toast.message}
+                type={toast.type}
+                onClose={() => setToast(null)}
+            />}
+
             <div className="mobile-header">
                 <div className="mobile-header-logo">
                     Staffoods<span className="logo-dot">.</span>

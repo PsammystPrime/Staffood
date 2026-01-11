@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Package, TrendingUp, ShoppingBag, Users, LogOut, Search, Eye, CheckCircle, XCircle, Menu, X, X as CloseIcon } from 'lucide-react';
+import Toast from '../components/Toast';
 import './AdminDashboard.css';
 import './AdminOrders.css';
 
@@ -12,6 +13,7 @@ const AdminOrders = () => {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedOrder, setSelectedOrder] = useState(null);
+    const [toast, setToast] = useState(null);
 
     useEffect(() => {
         fetchOrders();
@@ -26,6 +28,7 @@ const AdminOrders = () => {
             }
         } catch (error) {
             console.error('Error fetching orders:', error);
+            setToast({ message: 'Failed to fetch orders', type: 'error' });
         } finally {
             setLoading(false);
         }
@@ -52,9 +55,13 @@ const AdminOrders = () => {
                 if (selectedOrder && selectedOrder.id === orderId) {
                     setSelectedOrder(prev => ({ ...prev, status: newStatus }));
                 }
+                setToast({ message: `Order status updated to ${newStatus}`, type: 'success' });
+            } else {
+                setToast({ message: 'Failed to update order status', type: 'error' });
             }
         } catch (error) {
             console.error('Error updating status:', error);
+            setToast({ message: 'Error updating order status', type: 'error' });
         }
     };
 
@@ -76,6 +83,12 @@ const AdminOrders = () => {
 
     return (
         <div className="admin-container">
+            {toast && <Toast
+                message={toast.message}
+                type={toast.type}
+                onClose={() => setToast(null)}
+            />}
+
             {/* Mobile Header */}
             <div className="mobile-header">
                 <div className="mobile-header-logo">
