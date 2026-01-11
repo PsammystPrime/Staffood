@@ -22,7 +22,8 @@ const AdminDashboard = () => {
     ]);
 
     const handleLogout = () => {
-        // Add logout logic here
+        localStorage.removeItem('adminToken');
+        localStorage.removeItem('admin');
         navigate('/');
     };
 

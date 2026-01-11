@@ -1,78 +1,57 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { Package, TrendingUp, ShoppingBag, Users, LogOut, Search, Mail, Phone, MapPin, Award, Menu, X } from 'lucide-react';
 import './AdminDashboard.css';
 import './AdminUsers.css';
 
 const AdminUsers = () => {
+    const navigate = useNavigate();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
+    const [users, setUsers] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-    // Mock users data - will be replaced with API calls
-    const [users] = useState([
-        {
-            id: 1,
-            name: 'John Doe',
-            email: 'john.doe@example.com',
-            phone: '+254 712 345 678',
-            location: 'Kahawa Sukari',
-            points: 1250,
-            orders: 12,
-            totalSpent: 15400,
-            joinedDate: '2023-10-15'
-        },
-        {
-            id: 2,
-            name: 'Jane Smith',
-            email: 'jane.smith@example.com',
-            phone: '+254 723 456 789',
-            location: 'Kahawa West',
-            points: 850,
-            orders: 8,
-            totalSpent: 9200,
-            joinedDate: '2023-11-02'
-        },
-        {
-            id: 3,
-            name: 'Mike Johnson',
-            email: 'mike.j@example.com',
-            phone: '+254 734 567 890',
-            location: 'Kahawa Sukari',
-            points: 2100,
-            orders: 18,
-            totalSpent: 22500,
-            joinedDate: '2023-09-20'
-        },
-        {
-            id: 4,
-            name: 'Sarah Williams',
-            email: 'sarah.w@example.com',
-            phone: '+254 745 678 901',
-            location: 'Kahawa Wendani',
-            points: 450,
-            orders: 5,
-            totalSpent: 5800,
-            joinedDate: '2023-11-28'
-        },
-        {
-            id: 5,
-            name: 'David Brown',
-            email: 'david.brown@example.com',
-            phone: '+254 756 789 012',
-            location: 'Kahawa Sukari',
-            points: 1680,
-            orders: 14,
-            totalSpent: 18200,
-            joinedDate: '2023-10-08'
-        },
-    ]);
+    useEffect(() => {
+        fetchUsers();
+    }, []);
+
+    const fetchUsers = async () => {
+        try {
+            const response = await fetch('http://localhost:5000/api/users');
+            const data = await response.json();
+
+            if (data.success) {
+                setUsers(data.users);
+            }
+        } catch (error) {
+            console.error('Error fetching users:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleLogout = () => {
+        localStorage.removeItem('adminToken');
+        localStorage.removeItem('admin');
+        navigate('/');
+    };
 
     const filteredUsers = users.filter(user =>
-        user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.phone.includes(searchTerm) ||
-        user.location.toLowerCase().includes(searchTerm.toLowerCase())
+        (user.name && user.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (user.email && user.email.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (user.phone && user.phone.includes(searchTerm)) ||
+        (user.location && user.location.toLowerCase().includes(searchTerm.toLowerCase()))
     );
+
+    const formatDate = (dateString) => {
+        if (!dateString) return 'N/A';
+        return new Date(dateString).toLocaleDateString();
+    };
+
+    // Helper to format currency
+    const formatCurrency = (amount) => {
+        return parseFloat(amount || 0).toLocaleString();
+    };
 
     return (
         <div className="admin-container">
@@ -118,7 +97,7 @@ const AdminUsers = () => {
                     </Link>
                 </nav>
 
-                <button className="admin-logout">
+                <button className="admin-logout" onClick={handleLogout}>
                     <LogOut size={20} />
                     <span>Logout</span>
                 </button>
@@ -142,58 +121,62 @@ const AdminUsers = () => {
                         </div>
                     </div>
 
-                    <div className="users-grid">
-                        {filteredUsers.map(user => (
-                            <div key={user.id} className="user-card card">
-                                <div className="user-avatar">
-                                    <Users size={32} />
-                                </div>
-
-                                <div className="user-info">
-                                    <h3 className="user-name">{user.name}</h3>
-
-                                    <div className="user-details">
-                                        <div className="user-detail">
-                                            <Mail size={16} />
-                                            <span>{user.email}</span>
-                                        </div>
-                                        <div className="user-detail">
-                                            <Phone size={16} />
-                                            <span>{user.phone}</span>
-                                        </div>
-                                        <div className="user-detail">
-                                            <MapPin size={16} />
-                                            <span>{user.location}</span>
-                                        </div>
+                    {loading ? (
+                        <div className="p-4 text-center">Loading users...</div>
+                    ) : (
+                        <div className="users-grid">
+                            {filteredUsers.map(user => (
+                                <div key={user.id} className="user-card card">
+                                    <div className="user-avatar">
+                                        <Users size={32} />
                                     </div>
 
-                                    <div className="user-stats">
-                                        <div className="stat-item">
-                                            <span className="stat-label">Points</span>
-                                            <div className="points-display">
-                                                <Award size={16} />
-                                                <span className="stat-value">{user.points}</span>
+                                    <div className="user-info">
+                                        <h3 className="user-name">{user.name || user.username || 'User'}</h3>
+
+                                        <div className="user-details">
+                                            <div className="user-detail">
+                                                <Mail size={16} />
+                                                <span title={user.email}>{user.email}</span>
+                                            </div>
+                                            <div className="user-detail">
+                                                <Phone size={16} />
+                                                <span>{user.phone || 'N/A'}</span>
+                                            </div>
+                                            <div className="user-detail">
+                                                <MapPin size={16} />
+                                                <span>{user.location || 'N/A'}</span>
                                             </div>
                                         </div>
-                                        <div className="stat-item">
-                                            <span className="stat-label">Orders</span>
-                                            <span className="stat-value">{user.orders}</span>
-                                        </div>
-                                        <div className="stat-item">
-                                            <span className="stat-label">Total Spent</span>
-                                            <span className="stat-value">Ksh {user.totalSpent.toLocaleString()}</span>
-                                        </div>
-                                    </div>
 
-                                    <div className="user-footer">
-                                        <span className="joined-date">Joined: {user.joinedDate}</span>
+                                        <div className="user-stats">
+                                            <div className="stat-item">
+                                                <span className="stat-label">Points</span>
+                                                <div className="points-display">
+                                                    <Award size={16} />
+                                                    <span className="stat-value">{user.points}</span>
+                                                </div>
+                                            </div>
+                                            <div className="stat-item">
+                                                <span className="stat-label">Orders</span>
+                                                <span className="stat-value">{user.orders}</span>
+                                            </div>
+                                            <div className="stat-item">
+                                                <span className="stat-label">Total Spent</span>
+                                                <span className="stat-value">Ksh {formatCurrency(user.totalSpent)}</span>
+                                            </div>
+                                        </div>
+
+                                        <div className="user-footer">
+                                            <span className="joined-date">Joined: {formatDate(user.created_at)}</span>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        ))}
-                    </div>
+                            ))}
+                        </div>
+                    )}
 
-                    {filteredUsers.length === 0 && (
+                    {!loading && filteredUsers.length === 0 && (
                         <div className="empty-state">
                             <Users size={48} />
                             <p>No users found</p>

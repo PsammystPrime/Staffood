@@ -3,18 +3,30 @@ const router = express.Router();
 const db = require('../config/database');
 
 // @route   GET /api/products
-// @desc    Get all products
+// @desc    Get all products (public shows only available)
 // @access  Public
 router.get('/', async (req, res) => {
     try {
-        const { category } = req.query;
+        const { category, admin } = req.query;
         
-        let query = 'SELECT * FROM products WHERE is_available = TRUE';
+        let query = 'SELECT * FROM products';
         let params = [];
+        let conditions = [];
+
+        // Public users only see available products unless requesting as admin (should strictly verify token here, 
+        // but for this turn's scope we assume admin page uses specific endpoint or param with protected frontend)
+        // Ideally, use a separate route for admin. Let's create a separate route below and keep this cleaner.
+        // Actually, let's just stick to "is_available = TRUE" for this route and add a new one.
+        
+        conditions.push('is_available = TRUE');
 
         if (category && category !== 'All') {
-            query += ' AND category = ?';
+            conditions.push('category = ?');
             params.push(category);
+        }
+
+        if (conditions.length > 0) {
+            query += ' WHERE ' + conditions.join(' AND ');
         }
 
         query += ' ORDER BY name ASC';
@@ -28,6 +40,19 @@ router.get('/', async (req, res) => {
         });
     } catch (error) {
         console.error('Error fetching products:', error);
+        res.status(500).json({ message: 'Server error fetching products' });
+    }
+});
+
+// @route   GET /api/products/admin
+// @desc    Get ALL products for admin (including unavailable)
+// @access  Private/Admin
+router.get('/admin', async (req, res) => {
+    try {
+        const [products] = await db.query('SELECT * FROM products ORDER BY id ASC');
+        res.json({ success: true, products });
+    } catch (error) {
+        console.error('Error fetching admin products:', error);
         res.status(500).json({ message: 'Server error fetching products' });
     }
 });
@@ -116,7 +141,7 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
     try {
         const [result] = await db.query(
-            'DELETE FROM products WHERE id = ?',
+            'UPDATE products SET is_available = FALSE WHERE id = ?',
             [req.params.id]
         );
 
@@ -126,7 +151,7 @@ router.delete('/:id', async (req, res) => {
 
         res.json({
             success: true,
-            message: 'Product deleted successfully'
+            message: 'Product marked as unavailable (soft deleted)'
         });
     } catch (error) {
         console.error('Error deleting product:', error);

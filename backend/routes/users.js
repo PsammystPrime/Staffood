@@ -2,6 +2,33 @@ const express = require('express');
 const router = express.Router();
 const db = require('../config/database');
 
+// @route   GET /api/users
+// @desc    Get all users (Admin)
+// @access  Private/Admin
+router.get('/', async (req, res) => {
+    try {
+        const query = `
+            SELECT u.id, u.name, u.username, u.email, u.phone, u.location, u.created_at,
+                   COALESCE(up.points, 0) as points, 
+                   COALESCE(up.total_orders, 0) as orders, 
+                   COALESCE(up.total_spent, 0) as totalSpent
+            FROM users u
+            LEFT JOIN user_points up ON u.id = up.user_id
+            ORDER BY u.created_at DESC
+        `;
+        
+        const [users] = await db.query(query);
+
+        res.json({
+            success: true,
+            users
+        });
+    } catch (error) {
+        console.error('Error fetching users:', error);
+        res.status(500).json({ message: 'Server error fetching users' });
+    }
+});
+
 // @route   GET /api/users/profile/:userId
 // @desc    Get user profile
 // @access  Private

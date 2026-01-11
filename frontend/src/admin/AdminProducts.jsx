@@ -1,23 +1,51 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Package, TrendingUp, ShoppingBag, Users, LogOut, Plus, Edit2, Trash2, Search, Menu, X } from 'lucide-react';
-import { PRODUCTS } from '../data/products';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Package, TrendingUp, ShoppingBag, Users, LogOut, Plus, Edit2, Trash2, Search, Menu, X, RefreshCw } from 'lucide-react';
 import './AdminDashboard.css';
 import './AdminProducts.css';
 
 const AdminProducts = () => {
+    const navigate = useNavigate();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-    const [products, setProducts] = useState(PRODUCTS);
+    const [products, setProducts] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [categoryFilter, setCategoryFilter] = useState('All');
     const [isAddingProduct, setIsAddingProduct] = useState(false);
     const [editingProduct, setEditingProduct] = useState(null);
+    const [loading, setLoading] = useState(true);
     const [newProduct, setNewProduct] = useState({
         name: '',
         category: 'Fruits',
         price: '',
-        image: ''
+        image: '',
+        description: '',
+        stock_quantity: 0
     });
+
+    useEffect(() => {
+        fetchProducts();
+    }, []);
+
+    const fetchProducts = async () => {
+        try {
+            // Fetch all products (admin view)
+            const response = await fetch('http://localhost:5000/api/products/admin');
+            const data = await response.json();
+            if (data.success) {
+                setProducts(data.products);
+            }
+        } catch (error) {
+            console.error('Error fetching products:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleLogout = () => {
+        localStorage.removeItem('adminToken');
+        localStorage.removeItem('admin');
+        navigate('/');
+    };
 
     const filteredProducts = products.filter(product => {
         const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -26,16 +54,23 @@ const AdminProducts = () => {
         return matchesSearch && matchesCategory;
     });
 
-    const handleAddProduct = () => {
+    const handleAddProduct = async () => {
         if (newProduct.name && newProduct.price) {
-            const product = {
-                id: products.length + 1,
-                ...newProduct,
-                price: parseFloat(newProduct.price)
-            };
-            setProducts([...products, product]);
-            setNewProduct({ name: '', category: 'Fruits', price: '', image: '' });
-            setIsAddingProduct(false);
+            try {
+                const response = await fetch('http://localhost:5000/api/products', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(newProduct)
+                });
+
+                if (response.ok) {
+                    fetchProducts(); // Refresh list
+                    setNewProduct({ name: '', category: 'Fruits', price: '', image: '', description: '', stock_quantity: 0 });
+                    setIsAddingProduct(false);
+                }
+            } catch (error) {
+                console.error('Error adding product:', error);
+            }
         }
     };
 
@@ -45,32 +80,81 @@ const AdminProducts = () => {
             name: product.name,
             category: product.category,
             price: product.price.toString(),
-            image: product.image
+            image: product.image,
+            description: product.description || '',
+            stock_quantity: product.stock_quantity || 0,
+            is_available: product.is_available // Keep track of availability
         });
     };
 
-    const handleUpdateProduct = () => {
+    const handleUpdateProduct = async () => {
         if (editingProduct && newProduct.name && newProduct.price) {
-            setProducts(products.map(p =>
-                p.id === editingProduct.id
-                    ? { ...p, ...newProduct, price: parseFloat(newProduct.price) }
-                    : p
-            ));
-            setEditingProduct(null);
-            setNewProduct({ name: '', category: 'Fruits', price: '', image: '' });
+            try {
+                const response = await fetch(`http://localhost:5000/api/products/${editingProduct.id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        ...newProduct,
+                        price: parseFloat(newProduct.price)
+                    })
+                });
+
+                if (response.ok) {
+                    fetchProducts();
+                    setEditingProduct(null);
+                    setNewProduct({ name: '', category: 'Fruits', price: '', image: '', description: '', stock_quantity: 0 });
+                }
+            } catch (error) {
+                console.error('Error updating product:', error);
+            }
         }
     };
 
-    const handleDeleteProduct = (id) => {
-        if (window.confirm('Are you sure you want to delete this product?')) {
-            setProducts(products.filter(p => p.id !== id));
+    const handleSoftDelete = async (id) => {
+        if (window.confirm('Are you sure you want to mark this product as unavailable?')) {
+            try {
+                // DELETE method is mapped to Soft Delete in backend now
+                const response = await fetch(`http://localhost:5000/api/products/${id}`, {
+                    method: 'DELETE'
+                });
+                if (response.ok) {
+                    fetchProducts();
+                }
+            } catch (error) {
+                console.error('Error deleting product:', error);
+            }
+        }
+    };
+
+    const handleRestock = async (product) => {
+        try {
+            // Use PUT to update is_available to true
+            const response = await fetch(`http://localhost:5000/api/products/${product.id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: product.name, // Required fields must be sent or backend validation fails?
+                    category: product.category, // Backend updates all fields provided.
+                    price: product.price,
+                    image: product.image,
+                    description: product.description,
+                    stock_quantity: product.stock_quantity,
+                    is_available: true
+                })
+            });
+
+            if (response.ok) {
+                fetchProducts();
+            }
+        } catch (error) {
+            console.error('Error restocking product:', error);
         }
     };
 
     const handleCancelEdit = () => {
         setEditingProduct(null);
         setIsAddingProduct(false);
-        setNewProduct({ name: '', category: 'Fruits', price: '', image: '' });
+        setNewProduct({ name: '', category: 'Fruits', price: '', image: '', description: '', stock_quantity: 0 });
     };
 
     return (
@@ -117,7 +201,7 @@ const AdminProducts = () => {
                     </Link>
                 </nav>
 
-                <button className="admin-logout">
+                <button className="admin-logout" onClick={handleLogout}>
                     <LogOut size={20} />
                     <span>Logout</span>
                 </button>
@@ -225,38 +309,60 @@ const AdminProducts = () => {
                                     <th>Product Name</th>
                                     <th>Price</th>
                                     <th>Category</th>
+                                    <th>Status</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {filteredProducts.map(product => (
-                                    <tr key={product.id}>
-                                        <td className="order-id">#{product.id}</td>
-                                        <td>{product.name}</td>
-                                        <td className="price-cell">Ksh {product.price}</td>
-                                        <td>
-                                            <span className="category-badge">{product.category}</span>
-                                        </td>
-                                        <td>
-                                            <div className="action-buttons">
-                                                <button
-                                                    className="action-btn edit"
-                                                    onClick={() => handleEditProduct(product)}
-                                                    title="Edit"
-                                                >
-                                                    <Edit2 size={16} />
-                                                </button>
-                                                <button
-                                                    className="action-btn delete"
-                                                    onClick={() => handleDeleteProduct(product.id)}
-                                                    title="Delete"
-                                                >
-                                                    <Trash2 size={16} />
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))}
+                                {filteredProducts.map(product => {
+                                    const isUnavailable = product.is_available === 0 || product.is_available === false;
+                                    return (
+                                        <tr key={product.id} className={isUnavailable ? 'unavailable-product' : ''}>
+                                            <td className="order-id">#{product.id}</td>
+                                            <td style={isUnavailable ? { textDecoration: 'line-through', color: '#9CA3AF' } : {}}>
+                                                {product.name}
+                                            </td>
+                                            <td className="price-cell">Ksh {product.price}</td>
+                                            <td>
+                                                <span className="category-badge">{product.category}</span>
+                                            </td>
+                                            <td>
+                                                <span className={`status-badge ${!isUnavailable ? 'completed' : 'cancelled'}`}>
+                                                    {!isUnavailable ? 'In Stock' : 'Out of Stock'}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <div className="action-buttons">
+                                                    <button
+                                                        className="action-btn edit"
+                                                        onClick={() => handleEditProduct(product)}
+                                                        title="Edit"
+                                                    >
+                                                        <Edit2 size={16} />
+                                                    </button>
+                                                    {isUnavailable ? (
+                                                        <button
+                                                            className="action-btn restock"
+                                                            onClick={() => handleRestock(product)}
+                                                            title="Restock"
+                                                            style={{ color: '#059669', background: '#ECFDF5' }}
+                                                        >
+                                                            <Plus size={16} />
+                                                        </button>
+                                                    ) : (
+                                                        <button
+                                                            className="action-btn delete"
+                                                            onClick={() => handleSoftDelete(product.id)}
+                                                            title="Mark as Unavailable"
+                                                        >
+                                                            <Trash2 size={16} />
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
                             </tbody>
                         </table>
                     </div>
