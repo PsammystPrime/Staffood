@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 import './Auth.css';
 
 const Login = () => {
     const navigate = useNavigate();
+    const { login } = useAuth();
     const [showPassword, setShowPassword] = useState(false);
     const [formData, setFormData] = useState({
         email: '',
@@ -38,9 +40,8 @@ const Login = () => {
             const data = await response.json();
 
             if (response.ok) {
-                // Store token and user data
-                localStorage.setItem('token', data.token);
-                localStorage.setItem('user', JSON.stringify(data.user));
+                // Use AuthContext login
+                login(data.token, data.user);
                 // Redirect to home
                 navigate('/');
             } else {

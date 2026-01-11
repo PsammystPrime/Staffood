@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, User, Phone, MapPin, Eye, EyeOff } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 import './Auth.css';
 
 const Register = () => {
     const navigate = useNavigate();
+    const { login } = useAuth();
     const [showPassword, setShowPassword] = useState(false);
     const [formData, setFormData] = useState({
         username: '',
@@ -60,9 +62,8 @@ const Register = () => {
             const data = await response.json();
 
             if (response.ok) {
-                // Store token
-                localStorage.setItem('token', data.token);
-                localStorage.setItem('user', JSON.stringify(data.user));
+                // Use AuthContext login
+                login(data.token, data.user);
                 // Redirect to home
                 navigate('/');
             } else {
