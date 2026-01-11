@@ -9,12 +9,12 @@ export default defineConfig({
     port: 5173,
     strictPort: true,
     hmr: {
-      host: '192.168.1.6',
+      host: '192.168.100.3',
       port: 5173
     },
     allowedHosts: [
       'localhost',
-      '192.168.1.6',
+      '192.168.100.3',
       'staffood.co.ke'
     ]
   }

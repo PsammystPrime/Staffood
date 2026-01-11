@@ -1,0 +1,17 @@
+{
+    "name": "staffoods-app",
+    "version": "1.0.0",
+    "private": true,
+    "workspaces": [
+        "frontend",
+        "backend"
+    ],
+    "scripts": {
+        "build": "npm run build --workspace=frontend",
+        "dev": "npm run dev --workspaces",
+        "start": "node backend/server.js"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC"
+}
