@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import { User, Phone, Mail, MapPin, Award, Edit2, Save } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import Loader from '../components/Loader';
 import './Profile.css';
 
 const Profile = () => {
@@ -84,14 +85,7 @@ const Profile = () => {
     };
 
     if (loading) {
-        return (
-            <>
-                <Navbar />
-                <div className="container section">
-                    <p>Loading profile...</p>
-                </div>
-            </>
-        );
+        return <Loader fullScreen={true} />;
     }
 
     return (

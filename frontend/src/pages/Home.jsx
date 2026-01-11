@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import ProductCard from '../components/ProductCard';
+import Loader from '../components/Loader';
 import './Home.css';
 
 const Home = () => {
@@ -45,8 +46,8 @@ const Home = () => {
             <main className="container section" id="shop-section">
                 <h2 className="section-title">Featured Products</h2>
                 {loading ? (
-                    <div className="loading-state">
-                        <p>Loading products...</p>
+                    <div className="flex justify-center py-10">
+                        <Loader />
                     </div>
                 ) : (
                     <div className="grid grid-cols-3">

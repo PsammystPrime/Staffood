@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import Loader from '../components/Loader';
-import { CheckCircle, MapPin, Phone, CreditCard, ChevronRight } from 'lucide-react';
+import { CheckCircle, MapPin, Phone, ChevronRight, Store, Truck } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useShop } from '../context/ShopContext';
 import { useAuth } from '../context/AuthContext';
@@ -12,15 +12,15 @@ const Checkout = () => {
     const { cart, getCartTotal, clearCart } = useShop();
     const navigate = useNavigate();
 
-    // Use initial state or default to empty string, but we'll set it in useEffect to be safe
     const [phone, setPhone] = useState('');
     const [location, setLocation] = useState('');
     const [notes, setNotes] = useState('');
+    const [isDelivery, setIsDelivery] = useState(true); // Default to delivery
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
     const subtotal = getCartTotal();
-    const deliveryFee = 100;
+    const deliveryFee = isDelivery ? 100 : 0;
     const total = subtotal + deliveryFee;
 
     useEffect(() => {
@@ -29,7 +29,6 @@ const Checkout = () => {
             return;
         }
 
-        // Pre-fill data if available
         if (user.phone) setPhone(user.phone);
         if (user.location) setLocation(user.location);
     }, [user, navigate]);
@@ -46,7 +45,6 @@ const Checkout = () => {
         }
 
         try {
-            // Prepare payload with only IDs and quantities
             const orderItems = cart.map(item => ({
                 id: item.id,
                 quantity: item.quantity
@@ -60,9 +58,9 @@ const Checkout = () => {
                 body: JSON.stringify({
                     userId: user.id,
                     items: orderItems,
-                    delivery: true, // Assuming always delivery for now
+                    delivery: isDelivery,
                     phone,
-                    location, // This is the delivery location
+                    location: isDelivery ? location : 'Pickup at Store',
                     notes
                 }),
             });
@@ -70,10 +68,7 @@ const Checkout = () => {
             const data = await response.json();
 
             if (response.ok) {
-                // In a real app, we would wait for M-Pesa Callback
-                // For now, we simulate success message
                 alert(`Order Placed Successfully! Order #${data.order.orderNumber}. \nCheck your phone ${phone} for the STK push.`);
-
                 clearCart();
                 navigate('/history');
             } else {
@@ -109,7 +104,7 @@ const Checkout = () => {
                                 </div>
                                 <div className="summary-row">
                                     <span>Delivery Fee</span>
-                                    <span>Ksh {deliveryFee}</span>
+                                    <span>{isDelivery ? `Ksh ${deliveryFee}` : 'Free (Pickup)'}</span>
                                 </div>
                                 <div className="summary-total">
                                     <span>Total to Pay</span>
@@ -124,28 +119,48 @@ const Checkout = () => {
 
                         {/* Delivery Details Form */}
                         <div className="delivery-form-card">
-                            <h3 className="card-header">Delivery & Payment</h3>
+                            <h3 className="card-header">Delivery Option</h3>
+
+                            {/* Delivery Toggle */}
+                            <div className="delivery-toggle-container mb-6">
+                                <button
+                                    type="button"
+                                    className={`delivery-toggle-btn ${isDelivery ? 'active' : ''}`}
+                                    onClick={() => setIsDelivery(true)}
+                                >
+                                    <Truck size={18} /> Delivery
+                                </button>
+                                <button
+                                    type="button"
+                                    className={`delivery-toggle-btn ${!isDelivery ? 'active' : ''}`}
+                                    onClick={() => setIsDelivery(false)}
+                                >
+                                    <Store size={18} /> Pickup
+                                </button>
+                            </div>
 
                             {error && <div className="error-message mb-4">{error}</div>}
 
                             <form onSubmit={handlePayment}>
-                                <div className="form-group mb-4">
-                                    <label className="form-label">Delivery Location</label>
-                                    <div className="input-group">
-                                        <div className="input-icon">
-                                            <MapPin size={18} />
+                                {isDelivery && (
+                                    <div className="form-group mb-4">
+                                        <label className="form-label">Delivery Location</label>
+                                        <div className="input-group">
+                                            <div className="input-icon">
+                                                <MapPin size={18} />
+                                            </div>
+                                            <input
+                                                type="text"
+                                                placeholder={user?.location || "e.g. Kahawa Sukari, Avenue 1"}
+                                                className="form-input"
+                                                value={location}
+                                                onChange={e => setLocation(e.target.value)}
+                                                required={isDelivery}
+                                            />
                                         </div>
-                                        <input
-                                            type="text"
-                                            placeholder={user?.location || "e.g. Kahawa Sukari, Avenue 1"}
-                                            className="form-input"
-                                            value={location}
-                                            onChange={e => setLocation(e.target.value)}
-                                            required
-                                        />
+                                        <span className="helper-text">We'll deliver to this address.</span>
                                     </div>
-                                    <span className="helper-text">We'll deliver to this address.</span>
-                                </div>
+                                )}
 
                                 <div className="form-group mb-4">
                                     <label className="form-label">M-Pesa Number</label>
@@ -162,13 +177,13 @@ const Checkout = () => {
                                             required
                                         />
                                     </div>
-                                    <span className="helper-text">For Payment Prompt & Delivery Contact</span>
+                                    <span className="helper-text">For Payment Prompt & Confirmation</span>
                                 </div>
 
                                 <div className="form-group mb-6">
                                     <label className="form-label">Notes (Optional)</label>
                                     <textarea
-                                        placeholder="Specific instructions (e.g. 'Leave at gate')"
+                                        placeholder="Specific instructions..."
                                         className="form-textarea"
                                         rows="2"
                                         value={notes}

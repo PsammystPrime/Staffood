@@ -3,15 +3,20 @@ import Navbar from '../components/Navbar';
 import { Trash2, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useShop } from '../context/ShopContext';
+import Loader from '../components/Loader';
 import './Cart.css';
 
 const Cart = () => {
-    const { cart, removeFromCart, updateQuantity, getCartTotal } = useShop();
+    const { cart, removeFromCart, updateQuantity, getCartTotal, loading } = useShop();
     const [includeDelivery, setIncludeDelivery] = useState(true);
 
     const subtotal = getCartTotal();
     const deliveryFee = (subtotal > 0 && includeDelivery) ? 100 : 0;
     const total = subtotal + deliveryFee;
+
+    if (loading) {
+        return <Loader fullScreen={true} />;
+    }
 
     return (
         <>
