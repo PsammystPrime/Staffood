@@ -1,6 +1,7 @@
-const express = require('express');
+import express from 'express';
+import db from '../config/database.js';
+
 const router = express.Router();
-const db = require('../config/database');
 
 // @route   GET /api/users
 // @desc    Get all users (Admin)
@@ -66,4 +67,4 @@ router.get('/profile/:userId', async (req, res) => {
     }
 });
 
-module.exports = router;
+export default router;

@@ -1,5 +1,6 @@
-const mysql = require('mysql2/promise');
-require('dotenv').config();
+import mysql from 'mysql2/promise';
+import dotenv from 'dotenv';
+dotenv.config();
 
 // Create MySQL connection pool with SSL support for cloud databases
 const pool = mysql.createPool({
@@ -21,7 +22,6 @@ const pool = mysql.createPool({
 pool.getConnection()
     .then(connection => {
         console.log('✅ MySQL Database connected successfully');
-        // console.log(`📍 Connected to: ${process.env.DB_HOST}:${process.env.DB_PORT || 3306}`);
         connection.release();
     })
     .catch(err => {
@@ -39,4 +39,4 @@ pool.getConnection()
         console.error('   5. Verify your IP is whitelisted in cloud database settings');
     });
 
-module.exports = pool;
+export default pool;

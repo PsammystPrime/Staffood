@@ -1,8 +1,9 @@
-const express = require('express');
+import express from 'express';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import db from '../config/database.js';
+
 const router = express.Router();
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const db = require('../config/database');
 
 // JWT Secret (should be in .env)
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-this';
@@ -195,7 +196,7 @@ router.post('/admin-login', async (req, res) => {
             return res.status(401).json({ message: 'Invalid admin credentials' });
         }
 
-        // Update last login (optional, skipping for now to avoid table issues)
+        // Update last login (optional)
         // await db.query('UPDATE users SET updated_at = NOW() WHERE id = ?', [admin.id]);
 
         // Create JWT token
@@ -223,4 +224,4 @@ router.post('/admin-login', async (req, res) => {
     }
 });
 
-module.exports = router;
+export default router;

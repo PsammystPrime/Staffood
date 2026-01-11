@@ -1,6 +1,7 @@
-const express = require('express');
+import express from 'express';
+import db from '../config/database.js';
+
 const router = express.Router();
-const db = require('../config/database');
 
 // Middleware to extract user ID (assuming you have one, or we pass it in)
 // For now, we'll assume the frontend sends userId in the body or query for simplicity, 
@@ -153,4 +154,4 @@ router.delete('/clear', async (req, res) => {
     }
 });
 
-module.exports = router;
+export default router;

@@ -1,23 +1,20 @@
-const express = require('express');
+import express from 'express';
+import db from '../config/database.js';
+
 const router = express.Router();
-const db = require('../config/database');
 
 // @route   GET /api/products
 // @desc    Get all products (public shows only available)
 // @access  Public
 router.get('/', async (req, res) => {
     try {
-        const { category, admin } = req.query;
+        const { category } = req.query;
         
         let query = 'SELECT * FROM products';
         let params = [];
         let conditions = [];
 
-        // Public users only see available products unless requesting as admin (should strictly verify token here, 
-        // but for this turn's scope we assume admin page uses specific endpoint or param with protected frontend)
-        // Ideally, use a separate route for admin. Let's create a separate route below and keep this cleaner.
-        // Actually, let's just stick to "is_available = TRUE" for this route and add a new one.
-        
+        // Public users only see available products
         conditions.push('is_available = TRUE');
 
         if (category && category !== 'All') {
@@ -159,4 +156,4 @@ router.delete('/:id', async (req, res) => {
     }
 });
 
-module.exports = router;
+export default router;

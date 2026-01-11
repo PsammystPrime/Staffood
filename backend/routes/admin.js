@@ -1,6 +1,7 @@
-const express = require('express');
+import express from 'express';
+import db from '../config/database.js';
+
 const router = express.Router();
-const db = require('../config/database');
 
 // @route   GET /api/admin/stats
 // @desc    Get dashboard stats
@@ -62,4 +63,4 @@ router.get('/stats', async (req, res) => {
     }
 });
 
-module.exports = router;
+export default router;

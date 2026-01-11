@@ -1,6 +1,7 @@
-const express = require('express');
+import express from 'express';
+import db from '../config/database.js';
+
 const router = express.Router();
-const db = require('../config/database');
 
 // @route   POST /api/orders
 // @desc    Create new order and initiate payment
@@ -105,8 +106,6 @@ router.get('/user/:userId', async (req, res) => {
         );
 
         // Fetch items for each order
-        // Note: In production, a JOIN or single query with aggregation is better for performance,
-        // but for simplicity and clarity here, we'll map.
         const ordersWithItems = await Promise.all(orders.map(async (order) => {
             const [items] = await db.query(
                 'SELECT product_name, quantity, price, subtotal FROM order_items WHERE order_id = ?',
@@ -185,4 +184,4 @@ router.put('/:id/status', async (req, res) => {
     }
 });
 
-module.exports = router;
+export default router;

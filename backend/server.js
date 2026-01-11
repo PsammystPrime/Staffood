@@ -1,7 +1,17 @@
-const express = require('express');
-const cors = require('cors');
-const bodyParser = require('body-parser');
-require('dotenv').config();
+import express from 'express';
+import cors from 'cors';
+import bodyParser from 'body-parser';
+import dotenv from 'dotenv';
+import { fileURLToPath } from 'url';
+
+import authRoutes from './routes/auth.js';
+import productsRoutes from './routes/products.js';
+import usersRoutes from './routes/users.js';
+import cartRoutes from './routes/cart.js';
+import ordersRoutes from './routes/orders.js';
+import adminRoutes from './routes/admin.js';
+
+dotenv.config();
 
 const app = express();
 
@@ -11,18 +21,12 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // Routes
-const authRoutes = require('./routes/auth');
-const productsRoutes = require('./routes/products');
-const usersRoutes = require('./routes/users');
-const cartRoutes = require('./routes/cart');
-const ordersRoutes = require('./routes/orders');
-
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productsRoutes);
 app.use('/api/users', usersRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/orders', ordersRoutes);
-app.use('/api/admin', require('./routes/admin'));
+app.use('/api/admin', adminRoutes);
 
 // Basic route
 app.get('/', (req, res) => {
@@ -37,10 +41,12 @@ app.use((err, req, res, next) => {
 
 const PORT = process.env.PORT || 5000;
 
-if (require.main === module) {
+// Determine if running directly
+const __filename = fileURLToPath(import.meta.url);
+if (process.argv[1] === __filename) {
     app.listen(PORT, () => {
         console.log(`🚀 Server running on port ${PORT}`);
     });
 }
 
-module.exports = app;
+export default app;
