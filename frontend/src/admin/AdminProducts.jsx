@@ -57,26 +57,31 @@ const AdminProducts = () => {
     });
 
     const handleAddProduct = async () => {
-        if (newProduct.name && newProduct.price) {
-            try {
-                const response = await fetch('http://localhost:5000/api/products', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(newProduct)
-                });
+        if (!newProduct.name || !newProduct.price || !newProduct.image) {
+            setToast({ message: 'Please fill in Name, Price, and Image URL', type: 'error' });
+            return;
+        }
 
-                if (response.ok) {
-                    fetchProducts();
-                    setNewProduct({ name: '', category: 'Fruits', price: '', image: '', description: '', stock_quantity: 0 });
-                    setIsAddingProduct(false);
-                    setToast({ message: 'Product added successfully', type: 'success' });
-                } else {
-                    setToast({ message: 'Failed to add product', type: 'error' });
-                }
-            } catch (error) {
-                console.error('Error adding product:', error);
-                setToast({ message: 'Error adding product', type: 'error' });
+        try {
+            const response = await fetch('http://localhost:5000/api/products', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(newProduct)
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                fetchProducts();
+                setNewProduct({ name: '', category: 'Fruits', price: '', image: '', description: '', stock_quantity: 0 });
+                setIsAddingProduct(false);
+                setToast({ message: 'Product added successfully', type: 'success' });
+            } else {
+                setToast({ message: data.message || 'Failed to add product', type: 'error' });
             }
+        } catch (error) {
+            console.error('Error adding product:', error);
+            setToast({ message: 'Error adding product', type: 'error' });
         }
     };
 
