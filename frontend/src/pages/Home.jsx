@@ -20,7 +20,7 @@ const Home = () => {
 
             if (response.ok) {
                 // Show only first 6 products for featured section
-                setProducts(data.products.slice(0, 6));
+                setProducts(data.products.slice(0, 12));
             }
         } catch (err) {
             console.error('Error fetching products:', err);
