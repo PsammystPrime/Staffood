@@ -40,6 +40,9 @@ const Checkout = () => {
         if (!location && user.location) setLocation(user.location);
     }, [user, navigate, phone, location]);
 
+    const [paymentProcessing, setPaymentProcessing] = useState(false);
+    const [paymentStatus, setPaymentStatus] = useState('waiting'); // waiting, success, failed
+
     const handlePayment = async (e) => {
         e.preventDefault();
         setLoading(true);
@@ -57,7 +60,8 @@ const Checkout = () => {
                 quantity: item.quantity
             }));
 
-            const response = await fetch(`${API_URL}/api/orders`, {
+            // 1. Create Order
+            const orderResponse = await fetch(`${API_URL}/api/orders`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -72,21 +76,84 @@ const Checkout = () => {
                 }),
             });
 
-            const data = await response.json();
+            const orderData = await orderResponse.json();
 
-            if (response.ok) {
-                alert(`Order Placed Successfully! Order #${data.order.orderNumber}. \nCheck your phone ${phone} for the STK push.`);
-                clearCart();
-                navigate('/history');
-            } else {
-                setError(data.message || 'Order creation failed');
+            if (!orderResponse.ok) {
+                setError(orderData.message || 'Order creation failed');
+                setLoading(false);
+                return;
             }
+
+            const orderId = orderData.order.id;
+
+            // 2. Initiate STK Push
+            setPaymentProcessing(true);
+            setLoading(false); // Hide the full screen loader, show the payment overlay
+
+            const paymentResponse = await fetch(`${API_URL}/api/payments/initiate`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    phoneNumber: phone,
+                    amount: total,
+                    orderId: orderId,
+                    userId: user.id
+                }),
+            });
+
+            const paymentData = await paymentResponse.json();
+
+            if (!paymentResponse.ok) {
+                setPaymentProcessing(false);
+                setError(paymentData.error || 'Failed to initiate M-Pesa payment');
+                return;
+            }
+
+            const checkoutRequestId = paymentData.data.checkoutRequestId;
+
+            // 3. Start Polling for Status
+            pollPaymentStatus(checkoutRequestId, orderId);
+
         } catch (err) {
             console.error('Payment Error:', err);
             setError('Network error processing order');
-        } finally {
             setLoading(false);
+            setPaymentProcessing(false);
         }
+    };
+
+    const pollPaymentStatus = async (checkoutRequestId, orderId) => {
+        let attempts = 0;
+        const maxAttempts = 12; // 12 * 5 seconds = 60 seconds
+
+        const interval = setInterval(async () => {
+            try {
+                attempts++;
+                const response = await fetch(`${API_URL}/api/payments/status/${checkoutRequestId}`);
+                const data = await response.json();
+
+                if (data.success && data.status === 'completed') {
+                    clearInterval(interval);
+                    setPaymentStatus('success');
+                    setTimeout(() => {
+                        clearCart();
+                        navigate('/history');
+                    }, 2000);
+                } else if (data.status === 'failed' || data.status === 'cancelled' || attempts >= maxAttempts) {
+                    clearInterval(interval);
+                    setPaymentStatus('failed');
+                    setTimeout(() => {
+                        setPaymentProcessing(false);
+                        setPaymentStatus('waiting');
+                        setError('Payment was not completed. Please try again from Order History.');
+                    }, 3000);
+                }
+            } catch (err) {
+                console.error('Polling error:', err);
+            }
+        }, 5000);
     };
 
     if (loading) {
@@ -221,6 +288,37 @@ const Checkout = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Payment Processing Overlay */}
+            {paymentProcessing && (
+                <div className="payment-overlay">
+                    <div className="payment-modal">
+                        {paymentStatus === 'waiting' && (
+                            <div className="payment-status-content">
+                                <span className="payment-loader"></span>
+                                <h3>Waiting for Payment</h3>
+                                <p>Please check your phone for an M-Pesa STK push. Enter your PIN to complete the payment of <strong>Ksh {total.toLocaleString()}</strong>.</p>
+                                <div className="payment-hint">Do not close this page or press back.</div>
+                            </div>
+                        )}
+                        {paymentStatus === 'success' && (
+                            <div className="payment-status-content success">
+                                <CheckCircle size={64} className="text-success" />
+                                <h3>Payment Successful!</h3>
+                                <p>Thank you for your order. We are now processing it.</p>
+                                <p>Redirecting to order history...</p>
+                            </div>
+                        )}
+                        {paymentStatus === 'failed' && (
+                            <div className="payment-status-content failed">
+                                <div className="error-icon">×</div>
+                                <h3>Payment Failed</h3>
+                                <p>We couldn't confirm your payment. Please try again or contact support if you were charged.</p>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
         </>
     );
 };

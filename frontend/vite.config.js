@@ -15,6 +15,8 @@ export default defineConfig({
     allowedHosts: [
       'localhost',
       '192.168.100.3',
+      'https://75c70fe5f445.ngrok-free.app',
+      '75c70fe5f445.ngrok-free.app',
       'staffood.co.ke'
     ]
   }
