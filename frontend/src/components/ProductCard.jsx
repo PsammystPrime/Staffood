@@ -6,10 +6,19 @@ import './ProductCard.css';
 const ProductCard = ({ product }) => {
     const { addToCart } = useShop();
 
+    const [imageLoaded, setImageLoaded] = React.useState(false);
+
     return (
         <div className="card product-card">
-            <div className="product-image-container">
-                <img src={product.image} alt={product.name} className="product-image" />
+            <div className={`product-image-container ${!imageLoaded ? 'loading-shimmer' : ''}`}>
+                <img
+                    src={product.image}
+                    alt={product.name}
+                    className={`product-image ${imageLoaded ? 'loaded' : ''}`}
+                    loading="lazy"
+                    decoding="async"
+                    onLoad={() => setImageLoaded(true)}
+                />
             </div>
             <div className="p-4">
                 <div className="flex justify-between items-center">
