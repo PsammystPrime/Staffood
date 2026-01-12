@@ -1,6 +1,6 @@
 import { validationResult } from 'express-validator';
 import mpesaUtils from '../utils/mpesa.js';
-import db from '../../config/database.js';
+import db from '../../_config/database.js';
 
 // Initiate M-Pesa payment for an order
 export const initiatePayment = async (req, res) => {

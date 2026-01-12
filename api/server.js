@@ -4,14 +4,14 @@ import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
 import ip from 'ip';
 
-import authRoutes from './routes/auth.js';
-import productsRoutes from './routes/products.js';
-import usersRoutes from './routes/users.js';
-import cartRoutes from './routes/cart.js';
-import ordersRoutes from './routes/orders.js';
-import adminRoutes from './routes/admin.js';
-import mpesaRoutes from './mpesa/routes/payments.js';
-import { handleCallback } from './mpesa/controllers/paymentController.js';
+import authRoutes from './_routes/auth.js';
+import productsRoutes from './_routes/products.js';
+import usersRoutes from './_routes/users.js';
+import cartRoutes from './_routes/cart.js';
+import ordersRoutes from './_routes/orders.js';
+import adminRoutes from './_routes/admin.js';
+import mpesaRoutes from './_mpesa/routes/payments.js';
+import { handleCallback } from './_mpesa/controllers/paymentController.js';
 
 dotenv.config();
 
