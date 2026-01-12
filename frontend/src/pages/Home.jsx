@@ -51,7 +51,7 @@ const Home = () => {
                         <Loader />
                     </div>
                 ) : (
-                    <div className="grid grid-cols-3">
+                    <div className="products-grid">
                         {products.map(product => (
                             <ProductCard key={product.id} product={product} />
                         ))}
