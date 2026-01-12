@@ -99,25 +99,40 @@ router.get('/user/:userId', async (req, res) => {
     try {
         const { userId } = req.params;
         
-        // Fetch orders
-        const [orders] = await db.query(
-            'SELECT * FROM orders WHERE user_id = ? ORDER BY created_at DESC',
-            [userId]
-        );
+        // Fetch orders joined with items in a single query or structured fetch
+        const [rows] = await db.query(`
+            SELECT o.*, oi.product_name, oi.quantity, oi.price as item_price, oi.subtotal as item_subtotal
+            FROM orders o
+            LEFT JOIN order_items oi ON o.id = oi.order_id
+            WHERE o.user_id = ?
+            ORDER BY o.created_at DESC
+        `, [userId]);
 
-        // Fetch items for each order
-        const ordersWithItems = await Promise.all(orders.map(async (order) => {
-            const [items] = await db.query(
-                'SELECT product_name, quantity, price, subtotal FROM order_items WHERE order_id = ?',
-                [order.id]
-            );
-            return {
-                ...order,
-                items
-            };
-        }));
+        // Group rows by order ID
+        const ordersMap = new Map();
+        for (const row of rows) {
+            if (!ordersMap.has(row.id)) {
+                const orderData = { ...row };
+                // Remove item-specific fields from the main order object
+                delete orderData.product_name;
+                delete orderData.quantity;
+                delete orderData.item_price;
+                delete orderData.item_subtotal;
+                orderData.items = [];
+                ordersMap.set(row.id, orderData);
+            }
+            
+            if (row.product_name) {
+                ordersMap.get(row.id).items.push({
+                    product_name: row.product_name,
+                    quantity: row.quantity,
+                    price: row.item_price,
+                    subtotal: row.item_subtotal
+                });
+            }
+        }
 
-        res.json({ success: true, orders: ordersWithItems });
+        res.json({ success: true, orders: Array.from(ordersMap.values()) });
     } catch (error) {
         console.error('Error fetching orders:', error);
         res.status(500).json({ message: 'Server error fetching orders' });
@@ -129,27 +144,39 @@ router.get('/user/:userId', async (req, res) => {
 // @access  Private/Admin
 router.get('/admin', async (req, res) => {
     try {
-        // Fetch all orders with user name
-        const [orders] = await db.query(`
-            SELECT o.*, u.name as user_name 
+        // Fetch all orders with user name and items in a single query
+        const [rows] = await db.query(`
+            SELECT o.*, u.name as user_name, oi.product_name, oi.quantity, oi.price as item_price, oi.subtotal as item_subtotal
             FROM orders o 
             LEFT JOIN users u ON o.user_id = u.id 
+            LEFT JOIN order_items oi ON o.id = oi.order_id
             ORDER BY o.created_at DESC
         `);
 
-        // Fetch items for each order
-        const ordersWithItems = await Promise.all(orders.map(async (order) => {
-            const [items] = await db.query(
-                'SELECT product_name, quantity, price, subtotal FROM order_items WHERE order_id = ?',
-                [order.id]
-            );
-            return {
-                ...order,
-                items
-            };
-        }));
+        // Group rows by order ID
+        const ordersMap = new Map();
+        for (const row of rows) {
+            if (!ordersMap.has(row.id)) {
+                const orderData = { ...row };
+                delete orderData.product_name;
+                delete orderData.quantity;
+                delete orderData.item_price;
+                delete orderData.item_subtotal;
+                orderData.items = [];
+                ordersMap.set(row.id, orderData);
+            }
+            
+            if (row.product_name) {
+                ordersMap.get(row.id).items.push({
+                    product_name: row.product_name,
+                    quantity: row.quantity,
+                    price: row.item_price,
+                    subtotal: row.item_subtotal
+                });
+            }
+        }
 
-        res.json({ success: true, orders: ordersWithItems });
+        res.json({ success: true, orders: Array.from(ordersMap.values()) });
     } catch (error) {
         console.error('Error fetching admin orders:', error);
         res.status(500).json({ message: 'Server error fetching orders' });

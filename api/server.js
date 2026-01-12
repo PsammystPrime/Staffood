@@ -28,9 +28,16 @@ app.use((req, res, next) => {
     next();
 });
 
-// Priority Route: M-Pesa Callback (matches your .env exactly)
-app.post('/api/mpesa/callbacks/mpesaCallback', (req, res) => {
-    console.log('✅ M-Pesa Callback Route Hit!');
+// Priority Route: M-Pesa Callback (Handles all variations with/without underscore or /api prefix)
+const mpesaPaths = [
+    '/api/mpesa/callbacks/mpesaCallback',
+    '/api/_mpesa/callbacks/mpesaCallback',
+    '/mpesa/callbacks/mpesaCallback',
+    '/_mpesa/callbacks/mpesaCallback'
+];
+
+app.post(mpesaPaths, (req, res) => {
+    console.log(`✅ M-Pesa Callback Route Hit! Path: ${req.url}`);
     handleCallback(req, res);
 });
 
