@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
+dotenv.config();
 import ip from 'ip';
 
 import authRoutes from './_routes/auth.js';
@@ -13,8 +14,6 @@ import adminRoutes from './_routes/admin.js';
 import mpesaRoutes from './_mpesa/routes/payments.js';
 import settingsRoutes from './_routes/settings.js';
 import { handleCallback } from './_mpesa/controllers/paymentController.js';
-
-dotenv.config();
 
 const app = express();
 
