@@ -27,11 +27,9 @@ class MpesaUtils {
         TransactionDesc: transactionDesc || 'Payment'
       };
 
-      console.log('🚀 Sending STK Push Request:');
-      console.log('  - Target Phone:', formattedPhone);
-      console.log('  - Amount:', Math.floor(amount));
-      console.log('  - Callback URL:', mpesaConfig.callbackUrl);
-      console.log('  - Full Request:', JSON.stringify(requestData, null, 2));
+      console.log('🚀 Sending STK Push Request to:' + formattedPhone + ' with amount:' + Math.floor(amount));
+      // console.log('  - Callback URL:', mpesaConfig.callbackUrl);
+      // console.log('  - Full Request:', JSON.stringify(requestData, null, 2));
       
       const response = await axios.post(mpesaConfig.stkPushUrl, requestData, {
         headers: {
