@@ -1,17 +1,19 @@
 import express from 'express';
 import db from '../_config/database.js';
+import authMiddleware from '../_config/authMiddleware.js';
 
 const router = express.Router();
 
 // @route   POST /api/orders
 // @desc    Create new order and initiate payment
 // @access  Private
-router.post('/', async (req, res) => {
+router.post('/', authMiddleware, async (req, res) => {
     let connection;
     try {
-        const { userId, items, delivery, phone, location, notes } = req.body;
+        const { items, delivery, phone, location, notes } = req.body;
+        const userId = req.user.id;
 
-        if (!userId || !items || items.length === 0) {
+        if (!items || items.length === 0) {
             return res.status(400).json({ message: 'Missing required order fields' });
         }
 

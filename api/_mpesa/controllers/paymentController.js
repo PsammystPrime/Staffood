@@ -5,14 +5,34 @@ import db from '../../_config/database.js';
 // Initiate M-Pesa payment for an order
 export const initiatePayment = async (req, res) => {
   try {
-    const { phoneNumber, amount, orderId, userId } = req.body;
+    const { phoneNumber, orderId } = req.body;
+    const userId = req.user.id; // Get from JWT
     
-    if (!phoneNumber || !amount || !orderId || !userId) {
+    if (!phoneNumber || !orderId) {
         return res.status(400).json({
             success: false,
-            error: 'Missing required fields (phoneNumber, amount, orderId, userId)'
+            error: 'Missing required fields (phoneNumber, orderId)'
         });
     }
+
+    // 1. Fetch order details from DB to get SECURE amount
+    const [orders] = await db.query(
+        'SELECT total, user_id FROM orders WHERE id = ?', 
+        [orderId]
+    );
+
+    if (orders.length === 0) {
+        return res.status(404).json({ success: false, error: 'Order not found' });
+    }
+
+    const order = orders[0];
+
+    // 2. Security Check: Ensure this order belongs to the authenticated user
+    if (order.user_id !== userId) {
+        return res.status(403).json({ success: false, error: 'Unauthorized: Order does not belong to you' });
+    }
+
+    const amount = order.total;
 
     // Validate and convert amount
     const validatedAmount = mpesaUtils.validateAmount(amount);

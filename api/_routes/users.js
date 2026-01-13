@@ -1,13 +1,17 @@
 import express from 'express';
 import db from '../_config/database.js';
+import authMiddleware from '../_config/authMiddleware.js';
 
 const router = express.Router();
 
 // @route   GET /api/users
 // @desc    Get all users (Admin)
 // @access  Private/Admin
-router.get('/', async (req, res) => {
+router.get('/', authMiddleware, async (req, res) => {
     try {
+        if (req.user.role !== 'admin' && !req.user.isAdmin) {
+            return res.status(403).json({ message: 'Access denied' });
+        }
         const query = `
             SELECT u.id, u.name, u.username, u.email, u.phone, u.location, u.created_at,
                    COALESCE(up.points, 0) as points, 
@@ -33,10 +37,14 @@ router.get('/', async (req, res) => {
 // @route   GET /api/users/profile/:userId
 // @desc    Get user profile
 // @access  Private
-router.get('/profile/:userId', async (req, res) => {
+router.get('/profile/:userId', authMiddleware, async (req, res) => {
     try {
+        // Security: Only allow user to see their own profile or admin
+        if (parseInt(req.params.userId) !== req.user.id && req.user.role !== 'admin') {
+            return res.status(403).json({ message: 'Forbidden: You can only view your own profile' });
+        }
         const [users] = await db.query(
-            'SELECT id, username,name, location, email, phone, created_at FROM users WHERE id = ?',
+            'SELECT id, username,name, location, email, phone FROM users WHERE id = ?',
             [req.params.userId]
         );
 
@@ -51,9 +59,7 @@ router.get('/profile/:userId', async (req, res) => {
         );
 
         const user = users[0];
-        const points = pointsData[0] || { points: 0, points_spent: 0, total_spent: 0, total_orders: 0 };
-        console.log('User Profile Data:', user);
-        console.log('User Points Data:', points);
+        const points = pointsData[0] || { points: 0, points_spent: 0, total_orders: 0 };
 
         res.json({
             success: true,
@@ -61,7 +67,6 @@ router.get('/profile/:userId', async (req, res) => {
                 ...user,
                 points: points.points,
                 points_spent: points.points_spent,
-                total_spent: points.total_spent,
                 total_orders: points.total_orders
             }
         });

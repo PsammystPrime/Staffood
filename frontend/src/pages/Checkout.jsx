@@ -9,7 +9,7 @@ import './Checkout.css';
 import { API_URL } from '../config';
 
 const Checkout = () => {
-    const { user, loading: authLoading } = useAuth();
+    const { user, token, loading: authLoading } = useAuth();
     const { cart, getCartTotal, clearCart } = useShop();
     const navigate = useNavigate();
     const locationState = useLocation().state;
@@ -65,7 +65,11 @@ const Checkout = () => {
         const fetchUserProfile = async () => {
             try {
                 console.log('📡 Fetching user profile for ID:', user.id);
-                const response = await fetch(`${baseUrl}/api/users/profile/${user.id}`);
+                const response = await fetch(`${baseUrl}/api/users/profile/${user.id}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 const data = await response.json();
                 console.log('👤 Received user profile:', data.user);
@@ -118,9 +122,9 @@ const Checkout = () => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify({
-                    userId: user.id,
                     items: orderItems,
                     delivery: isDelivery,
                     phone,
@@ -147,12 +151,11 @@ const Checkout = () => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify({
                     phoneNumber: phone,
-                    amount: total,
-                    orderId: orderId,
-                    userId: user.id
+                    orderId: orderId
                 }),
             });
 
@@ -184,7 +187,11 @@ const Checkout = () => {
         const interval = setInterval(async () => {
             try {
                 attempts++;
-                const response = await fetch(`${API_URL}/api/payments/status/${checkoutRequestId}`);
+                const response = await fetch(`${API_URL}/api/payments/status/${checkoutRequestId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
                 const data = await response.json();
 
                 if (data.success && data.status === 'completed') {

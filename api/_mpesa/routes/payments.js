@@ -5,17 +5,19 @@ import {
   handleCallback
 } from '../controllers/paymentController.js';
 
+import authMiddleware from '../../_config/authMiddleware.js';
+
 const router = express.Router();
 
 // @route   POST /api/payments/initiate
 // @desc    Initiate M-Pesa STK Push
-// @access  Public
-router.post('/initiate', initiatePayment);
+// @access  Private
+router.post('/initiate', authMiddleware, initiatePayment);
 
 // @route   GET /api/payments/status/:checkoutRequestId
 // @desc    Check payment status (polled by frontend)
-// @access  Public
-router.get('/status/:checkoutRequestId', checkPaymentStatus);
+// @access  Private
+router.get('/status/:checkoutRequestId', authMiddleware, checkPaymentStatus);
 
 // @route   POST /api/payments/callback
 // @desc    Handle M-Pesa callback

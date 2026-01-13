@@ -6,7 +6,7 @@ import db from '../_config/database.js';
 const router = express.Router();
 
 // JWT Secret (should be in .env)
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-this';
+const JWT_SECRET = process.env.JWT_SECRET;
 
 // @route   POST /api/auth/register
 // @desc    Register a new user
