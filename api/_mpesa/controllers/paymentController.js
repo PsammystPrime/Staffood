@@ -171,6 +171,25 @@ export const handleCallback = async (req, res) => {
                     "UPDATE orders SET payment_status = 'Paid', status = 'Processing' WHERE id = ?",
                     [payment.order_id]
                 );
+
+                // 5. Update Loyalty Points (1 point = 50 KES)
+                const amount = parseFloat(callbackMetadata.amount);
+                const pointsEarned = Math.floor(amount / 50);
+
+                await db.query(`
+                    INSERT INTO user_points (user_id, username, points, total_spent, total_orders)
+                    SELECT user_id, ?, ?, ?, 1 FROM orders WHERE id = ?
+                    ON DUPLICATE KEY UPDATE 
+                        username = ?,
+                        points = points + ?,
+                        total_spent = total_spent + ?,
+                        total_orders = total_orders + 1
+                `, [
+                    payment.username, pointsEarned, amount, payment.order_id, 
+                    payment.username, pointsEarned, amount
+                ]);
+
+                console.log(`⭐ Points updated for ${payment.username}: +${pointsEarned} points`);
             } else {
                 // Update order to failed payment
                 await db.query(

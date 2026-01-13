@@ -155,6 +155,7 @@ router.post('/login', async (req, res) => {
                 username: user.username,
                 email: user.email,
                 phone: user.phone,
+                location: user.location,
                 role: user.role,
                 points: pointsData[0]?.points || 0
             }

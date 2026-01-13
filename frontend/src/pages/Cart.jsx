@@ -1,17 +1,37 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import { Trash2, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useShop } from '../context/ShopContext';
 import Loader from '../components/Loader';
+import { API_URL } from '../config';
 import './Cart.css';
 
 const Cart = () => {
     const { cart, removeFromCart, updateQuantity, getCartTotal, loading } = useShop();
     const [includeDelivery, setIncludeDelivery] = useState(true);
+    const [dbDeliveryFee, setDbDeliveryFee] = useState(100);
+
+    useEffect(() => {
+        const baseUrl = API_URL || '';
+        const fetchDeliveryFee = async () => {
+            try {
+                console.log('📡 Cart: Fetching delivery fee from:', baseUrl);
+                const response = await fetch(`${baseUrl}/api/settings/delivery-fee`);
+                const data = await response.json();
+                if (data.success) {
+                    console.log('🚚 Cart: Received delivery fee:', data.deliveryFee);
+                    setDbDeliveryFee(data.deliveryFee);
+                }
+            } catch (err) {
+                console.error('❌ Cart: Error fetching delivery fee:', err);
+            }
+        };
+        fetchDeliveryFee();
+    }, []);
 
     const subtotal = getCartTotal();
-    const deliveryFee = (subtotal > 0 && includeDelivery) ? 100 : 0;
+    const deliveryFee = (subtotal > 0 && includeDelivery) ? dbDeliveryFee : 0;
     const total = subtotal + deliveryFee;
 
     if (loading) {
@@ -77,7 +97,7 @@ const Cart = () => {
                                         onChange={(e) => setIncludeDelivery(e.target.checked)}
                                         className="delivery-checkbox"
                                     />
-                                    <span className="text-sm">Include delivery fee (Ksh 100)</span>
+                                    <span className="text-sm">Include delivery fee (Ksh {dbDeliveryFee})</span>
                                 </label>
                             </div>
 

@@ -46,18 +46,22 @@ router.get('/profile/:userId', async (req, res) => {
 
         // Get user points
         const [pointsData] = await db.query(
-            'SELECT points, total_spent, total_orders FROM user_points WHERE user_id = ?',
+            'SELECT points, points_spent, total_spent, total_orders FROM user_points WHERE user_id = ?',
             [req.params.userId]
         );
 
         const user = users[0];
-        const points = pointsData[0] || { points: 0, total_spent: 0, total_orders: 0 };
+        const points = pointsData[0] || { points: 0, points_spent: 0, total_spent: 0, total_orders: 0 };
+        console.log('User Profile Data:', user);
+        console.log('User Points Data:', points);
 
         res.json({
             success: true,
             user: {
                 ...user,
                 points: points.points,
+                points_spent: points.points_spent,
+                total_spent: points.total_spent,
                 total_orders: points.total_orders
             }
         });

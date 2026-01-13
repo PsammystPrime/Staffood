@@ -9,7 +9,7 @@ import './Checkout.css';
 import { API_URL } from '../config';
 
 const Checkout = () => {
-    const { user } = useAuth();
+    const { user, loading: authLoading } = useAuth();
     const { cart, getCartTotal, clearCart } = useShop();
     const navigate = useNavigate();
     const locationState = useLocation().state;
@@ -18,8 +18,8 @@ const Checkout = () => {
     const [isDelivery, setIsDelivery] = useState(locationState?.includeDelivery !== false);
 
     // Initialize phone and location directly from user object if available
-    const [phone, setPhone] = useState(user?.phone || '');
-    const [location, setLocation] = useState(user?.location || "Kahawa Sukari, Avenue 1");
+    const [phone, setPhone] = useState('');
+    const [location, setLocation] = useState('');
     const [notes, setNotes] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
@@ -32,29 +32,66 @@ const Checkout = () => {
     const total = subtotal + deliveryFee;
 
     useEffect(() => {
+        console.log('🔄 Checkout useEffect triggered', { authLoading, hasUser: !!user });
+
+        if (authLoading) return;
+
         if (!user) {
+            console.log('❌ No authenticated user, navigating to login');
             navigate('/login');
             return;
         }
 
+        const baseUrl = API_URL || '';
+        console.log('� Initiating checkout data fetch from:', baseUrl);
+
         // Fetch dynamic delivery fee
         const fetchDeliveryFee = async () => {
             try {
-                const response = await fetch(`${API_URL}/api/settings/delivery-fee`);
+                console.log('📡 Fetching delivery fee...');
+                const response = await fetch(`${baseUrl}/api/settings/delivery-fee`);
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 const data = await response.json();
+                console.log('🚚 Received delivery fee:', data.deliveryFee);
                 if (data.success) {
                     setDbDeliveryFee(data.deliveryFee);
                 }
             } catch (err) {
-                console.error('Error fetching delivery fee:', err);
+                console.error('❌ Failed to fetch delivery fee:', err);
             }
         };
-        fetchDeliveryFee();
 
-        // Only set if state was empty (prevents overwriting user typing if re-renders happen)
-        if (!phone && user.phone) setPhone(user.phone);
-        if (!location && user.location) setLocation(user.location);
-    }, [user, navigate]);
+        // Fetch latest user profile (for location/phone)
+        const fetchUserProfile = async () => {
+            try {
+                console.log('📡 Fetching user profile for ID:', user.id);
+                const response = await fetch(`${baseUrl}/api/users/profile/${user.id}`);
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                const data = await response.json();
+                console.log('👤 Received user profile:', data.user);
+
+                if (data.success && data.user) {
+                    const latestUser = data.user;
+                    if (latestUser.phone) setPhone(latestUser.phone);
+                    if (latestUser.location) {
+                        setLocation(latestUser.location);
+                    } else {
+                        console.log('ℹ️ No location in profile, using fallback');
+                        setLocation("Kahawa Sukari, Avenue 1");
+                    }
+                }
+            } catch (err) {
+                console.error('❌ Failed to fetch profile:', err);
+                // Fallback to local storage user object
+                if (user.phone) setPhone(user.phone);
+                if (user.location) setLocation(user.location);
+                else setLocation("Kahawa Sukari, Avenue 1");
+            }
+        };
+
+        fetchDeliveryFee();
+        fetchUserProfile();
+    }, [user?.id, authLoading, navigate]);
 
     const [paymentProcessing, setPaymentProcessing] = useState(false);
     const [paymentStatus, setPaymentStatus] = useState('waiting'); // waiting, success, failed
