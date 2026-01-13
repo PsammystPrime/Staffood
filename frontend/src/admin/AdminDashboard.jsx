@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Package, ShoppingBag, Users, DollarSign, TrendingUp, LogOut, Menu, X } from 'lucide-react';
+import { Package, ShoppingBag, Users, DollarSign, TrendingUp, LogOut, Menu, X, Settings } from 'lucide-react';
 import './AdminDashboard.css';
 import { API_URL } from '../config';
 
@@ -90,6 +90,10 @@ const AdminDashboard = () => {
                     <Link to="/admin/users" className="admin-nav-item">
                         <Users size={20} />
                         <span>Users</span>
+                    </Link>
+                    <Link to="/admin/settings" className="admin-nav-item">
+                        <Settings size={20} />
+                        <span>Settings</span>
                     </Link>
                 </nav>
 

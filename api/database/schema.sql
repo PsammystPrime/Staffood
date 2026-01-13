@@ -49,7 +49,7 @@ CREATE TABLE IF NOT EXISTS orders (
     subtotal DECIMAL(10, 2) NOT NULL,
     delivery_fee DECIMAL(10, 2) DEFAULT 0,
     total DECIMAL(10, 2) NOT NULL,
-    status ENUM('Pending', 'Processing', 'Completed', 'Cancelled') DEFAULT 'Pending',
+    status ENUM('Pending', 'Processing','In Delivery', 'Completed', 'Cancelled') DEFAULT 'Pending',
     payment_method VARCHAR(50) DEFAULT 'M-Pesa',
     payment_status ENUM('Pending', 'Paid', 'Failed') DEFAULT 'Pending',
     phone_number VARCHAR(20),

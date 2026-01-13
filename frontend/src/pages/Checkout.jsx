@@ -25,8 +25,10 @@ const Checkout = () => {
     const [error, setError] = useState('');
 
 
+    const [dbDeliveryFee, setDbDeliveryFee] = useState(100);
+
     const subtotal = getCartTotal();
-    const deliveryFee = isDelivery ? 100 : 0;
+    const deliveryFee = isDelivery ? dbDeliveryFee : 0;
     const total = subtotal + deliveryFee;
 
     useEffect(() => {
@@ -35,10 +37,24 @@ const Checkout = () => {
             return;
         }
 
+        // Fetch dynamic delivery fee
+        const fetchDeliveryFee = async () => {
+            try {
+                const response = await fetch(`${API_URL}/api/settings/delivery-fee`);
+                const data = await response.json();
+                if (data.success) {
+                    setDbDeliveryFee(data.deliveryFee);
+                }
+            } catch (err) {
+                console.error('Error fetching delivery fee:', err);
+            }
+        };
+        fetchDeliveryFee();
+
         // Only set if state was empty (prevents overwriting user typing if re-renders happen)
         if (!phone && user.phone) setPhone(user.phone);
         if (!location && user.location) setLocation(user.location);
-    }, [user, navigate, phone, location]);
+    }, [user, navigate]);
 
     const [paymentProcessing, setPaymentProcessing] = useState(false);
     const [paymentStatus, setPaymentStatus] = useState('waiting'); // waiting, success, failed

@@ -45,7 +45,11 @@ router.post('/', async (req, res) => {
             });
         }
 
-        const deliveryFee = delivery ? 100 : 0;
+        // Fetch dynamic delivery fee from settings
+        const [settingsRows] = await connection.query('SELECT delivery_fee FROM settings WHERE id = 1');
+        const dbDeliveryFee = settingsRows.length > 0 ? parseFloat(settingsRows[0].delivery_fee) : 100.00;
+
+        const deliveryFee = delivery ? dbDeliveryFee : 0;
         const total = subtotal + deliveryFee;
         const orderNumber = `ORD-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 

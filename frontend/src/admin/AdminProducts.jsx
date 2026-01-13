@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Package, TrendingUp, ShoppingBag, Users, LogOut, Plus, Edit2, Trash2, Search, Menu, X, RefreshCw } from 'lucide-react';
+import { Package, TrendingUp, ShoppingBag, Users, LogOut, Plus, Edit2, Trash2, Search, Menu, X, RefreshCw, Settings } from 'lucide-react';
 import Toast from '../components/Toast';
 import './AdminDashboard.css';
 import './AdminProducts.css';
@@ -227,6 +227,10 @@ const AdminProducts = () => {
                     <Link to="/admin/users" className="admin-nav-item">
                         <Users size={20} />
                         <span>Users</span>
+                    </Link>
+                    <Link to="/admin/settings" className="admin-nav-item">
+                        <Settings size={20} />
+                        <span>Settings</span>
                     </Link>
                 </nav>
 

@@ -12,6 +12,7 @@ import AdminDashboard from './admin/AdminDashboard';
 import AdminProducts from './admin/AdminProducts';
 import AdminOrders from './admin/AdminOrders';
 import AdminUsers from './admin/AdminUsers';
+import AdminSettings from './admin/AdminSettings';
 import { ShopProvider } from './context/ShopContext';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -66,6 +67,11 @@ function App() {
             <Route path="/admin/users" element={
               <AdminRoute>
                 <AdminUsers />
+              </AdminRoute>
+            } />
+            <Route path="/admin/settings" element={
+              <AdminRoute>
+                <AdminSettings />
               </AdminRoute>
             } />
           </Routes>

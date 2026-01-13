@@ -11,6 +11,7 @@ import cartRoutes from './_routes/cart.js';
 import ordersRoutes from './_routes/orders.js';
 import adminRoutes from './_routes/admin.js';
 import mpesaRoutes from './_mpesa/routes/payments.js';
+import settingsRoutes from './_routes/settings.js';
 import { handleCallback } from './_mpesa/controllers/paymentController.js';
 
 dotenv.config();
@@ -49,6 +50,7 @@ app.use('/api/cart', cartRoutes);
 app.use('/api/orders', ordersRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/payments', mpesaRoutes);
+app.use('/api/settings', settingsRoutes);
 
 // Basic route
 app.get('/', (req, res) => {
