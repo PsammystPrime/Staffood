@@ -23,7 +23,12 @@ const AdminOrders = () => {
 
     const fetchOrders = async () => {
         try {
-            const response = await fetch(API_URL + '/api/orders/admin');
+            const adminToken = localStorage.getItem('adminToken');
+            const response = await fetch(API_URL + '/api/orders/admin', {
+                headers: {
+                    'Authorization': `Bearer ${adminToken}`
+                }
+            });
             const data = await response.json();
             if (data.success) {
                 setOrders(data.orders);
@@ -44,9 +49,13 @@ const AdminOrders = () => {
 
     const handleStatusChange = async (orderId, newStatus) => {
         try {
+            const adminToken = localStorage.getItem('adminToken');
             const response = await fetch(`${API_URL}/api/orders/${orderId}/status`, {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${adminToken}`
+                },
                 body: JSON.stringify({ status: newStatus })
             });
 

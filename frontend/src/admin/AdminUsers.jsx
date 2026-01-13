@@ -19,7 +19,12 @@ const AdminUsers = () => {
 
     const fetchUsers = async () => {
         try {
-            const response = await fetch(API_URL + '/api/users');
+            const adminToken = localStorage.getItem('adminToken');
+            const response = await fetch(API_URL + '/api/users', {
+                headers: {
+                    'Authorization': `Bearer ${adminToken}`
+                }
+            });
             const data = await response.json();
 
             if (data.success) {

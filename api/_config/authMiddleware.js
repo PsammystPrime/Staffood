@@ -1,8 +1,7 @@
 import jwt from 'jsonwebtoken';
 
-const JWT_SECRET = process.env.JWT_SECRET;
-
 const authMiddleware = (req, res, next) => {
+    const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-this';
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {

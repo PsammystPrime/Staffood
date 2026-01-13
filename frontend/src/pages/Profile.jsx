@@ -7,7 +7,7 @@ import './Profile.css';
 import { API_URL } from '../config';
 
 const Profile = () => {
-    const { user: authUser, updateUser } = useAuth();
+    const { user: authUser, token, updateUser } = useAuth();
     const [isEditing, setIsEditing] = useState(false);
     const [loading, setLoading] = useState(true);
     const [profile, setProfile] = useState({
@@ -28,7 +28,11 @@ const Profile = () => {
 
     const fetchProfile = async () => {
         try {
-            const response = await fetch(`${API_URL}/api/users/profile/${authUser.id}`);
+            const response = await fetch(`${API_URL}/api/users/profile/${authUser.id}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
             const data = await response.json();
 
             if (response.ok) {
@@ -52,6 +56,7 @@ const Profile = () => {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify({
                     username: editedProfile.username,

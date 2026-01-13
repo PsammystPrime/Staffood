@@ -32,7 +32,12 @@ const AdminProducts = () => {
 
     const fetchProducts = async () => {
         try {
-            const response = await fetch(`${API_URL}/api/products/admin`);
+            const adminToken = localStorage.getItem('adminToken');
+            const response = await fetch(`${API_URL}/api/products/admin`, {
+                headers: {
+                    'Authorization': `Bearer ${adminToken}`
+                }
+            });
             const data = await response.json();
             if (data.success) {
                 setProducts(data.products);
@@ -65,9 +70,13 @@ const AdminProducts = () => {
         }
 
         try {
+            const adminToken = localStorage.getItem('adminToken');
             const response = await fetch(`${API_URL}/api/products`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${adminToken}`
+                },
                 body: JSON.stringify(newProduct)
             });
 
@@ -103,9 +112,13 @@ const AdminProducts = () => {
     const handleUpdateProduct = async () => {
         if (editingProduct && newProduct.name && newProduct.price) {
             try {
+                const adminToken = localStorage.getItem('adminToken');
                 const response = await fetch(`${API_URL}/api/products/${editingProduct.id}`, {
                     method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${adminToken}`
+                    },
                     body: JSON.stringify({
                         ...newProduct,
                         price: parseFloat(newProduct.price)
@@ -130,8 +143,12 @@ const AdminProducts = () => {
     const handleSoftDelete = async (id) => {
         if (window.confirm('Are you sure you want to mark this product as unavailable?')) {
             try {
+                const adminToken = localStorage.getItem('adminToken');
                 const response = await fetch(`${API_URL}/api/products/${id}`, {
-                    method: 'DELETE'
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${adminToken}`
+                    }
                 });
                 if (response.ok) {
                     fetchProducts();
@@ -148,9 +165,13 @@ const AdminProducts = () => {
 
     const handleRestock = async (product) => {
         try {
+            const adminToken = localStorage.getItem('adminToken');
             const response = await fetch(`${API_URL}/api/products/${product.id}`, {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${adminToken}`
+                },
                 body: JSON.stringify({
                     name: product.name,
                     category: product.category,
