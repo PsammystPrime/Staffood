@@ -14,18 +14,24 @@ class MpesaUtils {
       // For Paybill, BusinessShortCode is the paybill number
       // PartyB should be the till number (or same as BusinessShortCode if no till)
       const requestData = {
-        BusinessShortCode: mpesaConfig.shortcode,
+        BusinessShortCode: mpesaConfig.shortcode, //BusinessShortCode
         Password: password,
         Timestamp: timestamp,
         TransactionType: 'CustomerBuyGoodsOnline',
         Amount: Math.floor(amount), // Ensure amount is integer
         PartyA: formattedPhone,
-        PartyB: 4996810,
+        PartyB: 4996810, // Till number
         PhoneNumber: formattedPhone,
         CallBackURL: mpesaConfig.callbackUrl,
         AccountReference: accountReference || 'Account Payment',
         TransactionDesc: transactionDesc || 'Payment'
       };
+
+      console.log('🚀 Sending STK Push Request:');
+      console.log('  - Target Phone:', formattedPhone);
+      console.log('  - Amount:', Math.floor(amount));
+      console.log('  - Callback URL:', mpesaConfig.callbackUrl);
+      console.log('  - Full Request:', JSON.stringify(requestData, null, 2));
       
       const response = await axios.post(mpesaConfig.stkPushUrl, requestData, {
         headers: {
@@ -36,7 +42,8 @@ class MpesaUtils {
 
       // Check if STK Push was actually sent
       if (response.data.ResponseCode === '0') {
-        console.log('📱 STK Push should appear on phone:', formattedPhone);
+        console.log('📱 STK Push successfully sent to Safaricom cloud');
+        console.log('  - CheckoutRequestID:', response.data.CheckoutRequestID);
       } else {
         console.log('⚠️  STK Push request issue:');
         console.log('  - Response Code:', response.data.ResponseCode);
