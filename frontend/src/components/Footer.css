@@ -1,0 +1,140 @@
+.footer {
+    background-color: #1a1a1a;
+    color: #e5e7eb;
+    padding: 4rem 0 0 0;
+    margin-top: 4rem;
+    border-top: 5px solid var(--color-primary);
+    transition: margin-left 0.3s ease;
+}
+
+.footer.footer-admin {
+    margin-left: 260px;
+}
+
+@media (max-width: 768px) {
+    .footer.footer-admin {
+        margin-left: 0;
+    }
+}
+
+.footer-content {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1.5fr;
+    gap: 3rem;
+    margin-bottom: 3rem;
+}
+
+.footer-info h3 {
+    color: var(--color-primary);
+    font-size: 1.8rem;
+    margin-bottom: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.footer-logo-dot {
+    color: var(--color-white);
+}
+
+.footer-info p {
+    line-height: 1.7;
+    color: #9ca3af;
+    max-width: 400px;
+}
+
+.footer-section h4 {
+    color: var(--color-white);
+    font-size: 1.2rem;
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+    position: relative;
+}
+
+.footer-section h4::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -0.5rem;
+    width: 2rem;
+    height: 2px;
+    background-color: var(--color-primary);
+}
+
+.footer-links ul {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.footer-links a {
+    color: #9ca3af;
+    transition: all 0.2s;
+}
+
+.footer-links a:hover {
+    color: var(--color-primary);
+    padding-left: 5px;
+}
+
+.footer-contact ul {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.contact-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    color: #9ca3af;
+}
+
+.contact-item svg {
+    color: var(--color-primary);
+    flex-shrink: 0;
+    margin-top: 3px;
+}
+
+.footer-bottom {
+    background-color: #111111;
+    padding: 1.5rem 0;
+    border-top: 1px solid #374151;
+}
+
+.footer-bottom-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    color: #6b7280;
+    font-size: 0.9rem;
+}
+
+.footer-credit {
+    color: #9ca3af;
+}
+
+.footer-credit span {
+    color: var(--color-primary);
+    font-weight: 600;
+}
+
+@media (max-width: 968px) {
+    .footer-content {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 640px) {
+    .footer-content {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+
+    .footer-bottom-content {
+        flex-direction: column;
+        text-align: center;
+    }
+}

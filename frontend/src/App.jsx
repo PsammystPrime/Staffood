@@ -17,6 +17,16 @@ import { ShopProvider } from './context/ShopContext';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminRoute from './components/AdminRoute';
+import Footer from './components/Footer';
+import { useLocation } from 'react-router-dom';
+
+const FooterSelector = () => {
+  const location = useLocation();
+  // We apply the 'admin' offset if we're on an admin page (excluding the login page)
+  const isAdminPath = location.pathname.startsWith('/admin') && location.pathname !== '/admin-login';
+
+  return <Footer isAdmin={isAdminPath} />;
+};
 
 function App() {
   return (
@@ -75,6 +85,7 @@ function App() {
               </AdminRoute>
             } />
           </Routes>
+          <FooterSelector />
         </BrowserRouter>
       </ShopProvider>
     </AuthProvider>

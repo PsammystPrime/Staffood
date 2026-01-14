@@ -54,6 +54,28 @@ const AdminDashboard = () => {
         navigate('/');
     };
 
+    const getOrderStatus = (status) => {
+        switch (status) {
+            case 'Completed': return 'Completed';
+            case 'Delivered': return 'Delivered';
+            case 'Pending': return 'Pending Payment';
+            case 'Processing': return 'Processing';
+            case 'Cancelled': return 'Cancelled';
+            default: return '';
+        }
+    };
+
+    const getOrderStatusClass = (status) => {
+        switch (status) {
+            case 'Completed': return 'status-completed';
+            case 'Delivered': return 'status-delivered';
+            case 'Pending': return 'status-cancelled';
+            case 'Processing': return 'status-processing';
+            case 'Cancelled': return 'status-cancelled';
+            default: return '';
+        }
+    };
+
     return (
         <div className="admin-container">
             <div className="mobile-header">
@@ -177,8 +199,8 @@ const AdminDashboard = () => {
                                             <td>{order.customer || 'Guest'}</td>
                                             <td>Ksh {order.amount.toLocaleString()}</td>
                                             <td>
-                                                <span className={`status-badge ${order.status.toLowerCase()}`}>
-                                                    {order.status}
+                                                <span className={`status-badge ${getOrderStatusClass(order.status)}`}>
+                                                    {getOrderStatus(order.status)}
                                                 </span>
                                             </td>
                                             <td>{order.date}</td>

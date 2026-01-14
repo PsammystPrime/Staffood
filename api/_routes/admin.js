@@ -8,12 +8,9 @@ const router = express.Router();
 // @access  Private/Admin
 router.get('/stats', async (req, res) => {
     try {
-        // 1. Total Revenue (from completed orders)
-        // If 'status' enum is strict, use 'Completed'. if not, check.
-        // Assuming 'Completed' based on previous context.
+        // 1. Total Revenue (from completed transactions)
         const [revenueResult] = await db.query(
-            'SELECT SUM(total) as revenue FROM orders WHERE status = ?',
-            ['Completed']
+            'SELECT SUM(amount) as revenue FROM transactions',
         );
         const revenue = revenueResult[0].revenue || 0;
 
@@ -32,13 +29,14 @@ router.get('/stats', async (req, res) => {
         const productsCount = productsResult[0].count;
 
         // 5. Recent Orders (fetch last 5)
-        const [recentOrders] = await db.query(`
-            SELECT o.id, o.total as amount, o.status, o.created_at as date, u.name as customer
-            FROM orders o
+          const [recentOrders] = await db.query(`
+            SELECT o.id, o.total as amount,o.status,  o.created_at as date, u.name as customer
+            FROM orders o 
             LEFT JOIN users u ON o.user_id = u.id
+            WHERE o.status=?
             ORDER BY o.created_at DESC
-            LIMIT 5
-        `);
+            LIMIT 5`, ['processing']
+        );
         
         // Format recent orders date to YYYY-MM-DD
         const formattedOrders = recentOrders.map(order => ({
