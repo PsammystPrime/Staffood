@@ -45,9 +45,20 @@ const OrderHistory = () => {
         switch (status) {
             case 'Completed': return 'status-completed';
             case 'Delivered': return 'status-delivered';
-            case 'Pending': return 'status-pending';
+            case 'Pending': return 'status-cancelled';
             case 'Processing': return 'status-processing';
             case 'Cancelled': return 'status-cancelled';
+            default: return '';
+        }
+    };
+
+    const getOrderStatus = (status) => {
+        switch (status) {
+            case 'Completed': return 'Completed';
+            case 'Delivered': return 'Delivered';
+            case 'Pending': return 'Pending Payment';
+            case 'Processing': return 'Processing';
+            case 'Cancelled': return 'Cancelled';
             default: return '';
         }
     };
@@ -94,7 +105,7 @@ const OrderHistory = () => {
                                     <div className="text-right">
                                         <p className="font-bold">Ksh {parseFloat(order.total).toLocaleString()}</p>
                                         <span className={`status-badge ${getStatusClass(order.status)}`}>
-                                            {order.status}
+                                            {getOrderStatus(order.status)}
                                         </span>
                                     </div>
                                 </div>

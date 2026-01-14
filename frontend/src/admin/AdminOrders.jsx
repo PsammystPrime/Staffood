@@ -92,6 +92,28 @@ const AdminOrders = () => {
         return new Date(dateString).toLocaleDateString() + ' ' + new Date(dateString).toLocaleTimeString();
     };
 
+    const getOrderStatus = (status) => {
+        switch (status) {
+            case 'Completed': return 'Completed';
+            case 'Delivered': return 'Delivered';
+            case 'Pending': return 'Pending Payment';
+            case 'Processing': return 'Processing';
+            case 'Cancelled': return 'Cancelled';
+            default: return '';
+        }
+    };
+
+    const getOrderStatusClass = (status) => {
+        switch (status) {
+            case 'Completed': return 'status-completed';
+            case 'Delivered': return 'status-delivered';
+            case 'Pending': return 'status-cancelled';
+            case 'Processing': return 'status-processing';
+            case 'Cancelled': return 'status-cancelled';
+            default: return '';
+        }
+    };
+
     return (
         <div className="admin-container">
             {toast && <Toast
@@ -196,8 +218,8 @@ const AdminOrders = () => {
                                             <h3 className="order-id">{order.order_number || `#${order.id}`}</h3>
                                             <p className="order-date">{formatDate(order.created_at)}</p>
                                         </div>
-                                        <span className={`status-badge ${order.status.toLowerCase()}`}>
-                                            {order.status}
+                                        <span className={`status-badge ${getOrderStatusClass(order.status)}`}>
+                                            {getOrderStatus(order.status)}
                                         </span>
                                     </div>
 
@@ -234,7 +256,7 @@ const AdminOrders = () => {
                                             <span>View Details</span>
                                         </button>
 
-                                        {order.status !== 'Completed' && order.status !== 'Cancelled' && (
+                                        {order.status !== 'Completed' && order.status !== 'Cancelled' && order.status !== 'Pending' && (
                                             <button
                                                 className="action-btn approve"
                                                 onClick={() => handleStatusChange(order.id, 'Completed')}
@@ -348,7 +370,7 @@ const AdminOrders = () => {
                             <button className="btn btn-outline" onClick={() => setSelectedOrder(null)}>
                                 Close
                             </button>
-                            {selectedOrder.status !== 'Completed' && selectedOrder.status !== 'Cancelled' && (
+                            {selectedOrder.status !== 'Completed' && selectedOrder.status !== 'Cancelled' && selectedOrder.status !== 'Pending' && (
                                 <button
                                     className="btn btn-primary"
                                     onClick={() => handleStatusChange(selectedOrder.id, 'Completed')}
