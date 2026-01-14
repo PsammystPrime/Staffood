@@ -43,7 +43,7 @@ const Footer = ({ isAdmin }) => {
                         </li>
                         <li className="contact-item">
                             <Phone size={20} />
-                            <span>+254 716 041 426</span>
+                            <span>+254 710 933 724</span>
                         </li>
                         <li className="contact-item">
                             <Mail size={20} />
@@ -57,7 +57,7 @@ const Footer = ({ isAdmin }) => {
                 <div className="container footer-bottom-content">
                     <p>&copy; {currentYear} Staffoods Groceries. All rights reserved.</p>
                     <p className="footer-credit">
-                        System built and maintained by <span>PsammystPrime</span>
+                        System built and maintained by <span>MASTERPIECE SOFTWARES</span>
                     </p>
                 </div>
             </div>

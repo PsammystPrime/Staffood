@@ -13,21 +13,32 @@ const JWT_SECRET = process.env.JWT_SECRET;
 // @access  Public
 router.post('/register', async (req, res) => {
     try {
-        const { name, email, phone, password, location } = req.body;
+        const { name, phone, password, location } = req.body;
         
-        // Validation
-        if (!name || !email || !phone || !password) {
+        // Basic Validation
+        if (!name || !phone || !password) {
             return res.status(400).json({ message: 'Please provide all required fields' });
         }
 
+        // Kenyan Phone Validation (accepts 07..., 01..., 254..., +254...)
+        const kenyanPhoneRegex = /^(?:254|\+254|0)?([71]\d{8})$/;
+        const match = phone.match(kenyanPhoneRegex);
+        if (!match) {
+            return res.status(400).json({ message: 'Please provide a valid Kenyan phone number (e.g., 0712345678)' });
+        }
+        
+        // Normalize phone to format like 0712345678
+        const normalizedPhone = '0' + match[1];
+        const generatedEmail = `${normalizedPhone}@staffoods.co.ke`;
+
         // Check if user already exists
         const [existingUsers] = await db.query(
-            'SELECT * FROM users WHERE email = ? OR phone = ?',
-            [email, phone]
+            'SELECT * FROM users WHERE phone = ? OR email = ?',
+            [normalizedPhone, generatedEmail]
         );
 
         if (existingUsers.length > 0) {
-            return res.status(400).json({ message: 'User already exists with this email or phone' });
+            return res.status(400).json({ message: 'User already exists with this phone number' });
         }
 
         // Generate unique username from name
@@ -64,7 +75,7 @@ router.post('/register', async (req, res) => {
         // Insert user
         const [result] = await db.query(
             'INSERT INTO users (name, username, email, phone, location, password) VALUES (?, ?, ?, ?, ?, ?)',
-            [name, username, email, phone, location || null, hashedPassword]
+            [name, username, generatedEmail, normalizedPhone, location || null, hashedPassword]
         );
 
         const userId = result.insertId;
@@ -77,7 +88,7 @@ router.post('/register', async (req, res) => {
 
         // Create JWT token
         const token = jwt.sign(
-            { id: userId, email, username, name, role: 'user' },
+            { id: userId, email: generatedEmail, username, name, role: 'user' },
             JWT_SECRET,
             { expiresIn: '7d' }
         );
@@ -90,8 +101,8 @@ router.post('/register', async (req, res) => {
                 id: userId,
                 name,
                 username,
-                email,
-                phone,
+                email: generatedEmail,
+                phone: normalizedPhone,
                 role: 'user'
             }
         });
@@ -106,17 +117,25 @@ router.post('/register', async (req, res) => {
 // @access  Public
 router.post('/login', async (req, res) => {
     try {
-        const { email, password } = req.body;
+        const { phone, password } = req.body;
 
         // Validation
-        if (!email || !password) {
-            return res.status(400).json({ message: 'Please provide email and password' });
+        if (!phone || !password) {
+            return res.status(400).json({ message: 'Please provide phone number and password' });
         }
+
+        // Normalize phone for searching
+        const kenyanPhoneRegex = /^(?:254|\+254|0)?([71]\d{8})$/;
+        const match = phone.match(kenyanPhoneRegex);
+        if (!match) {
+            return res.status(400).json({ message: 'Invalid phone number format' });
+        }
+        const normalizedPhone = '0' + match[1];
 
         // Check if user exists
         const [users] = await db.query(
-            'SELECT * FROM users WHERE email = ?',
-            [email]
+            'SELECT * FROM users WHERE phone = ?',
+            [normalizedPhone]
         );
 
         if (users.length === 0) {
@@ -171,21 +190,26 @@ router.post('/login', async (req, res) => {
 // @access  Public
 router.post('/admin-login', async (req, res) => {
     try {
-        const { email, password } = req.body;
+        const { phone, password } = req.body;
 
         // Validation
-        if (!email || !password) {
-            return res.status(400).json({ message: 'Please provide email and password' });
+        if (!phone || !password) {
+            return res.status(400).json({ message: 'Please provide phone and password' });
         }
+
+        // Normalize 
+        const kenyanPhoneRegex = /^(?:254|\+254|0)?([71]\d{8})$/;
+        const match = phone.match(kenyanPhoneRegex);
+        const normalizedPhone = match ? '0' + match[1] : phone;
 
         // Check if admin exists
         const [admins] = await db.query(
-            "SELECT * FROM users WHERE email = ? AND role = 'admin'",
-            [email]
+            "SELECT * FROM users WHERE phone = ? AND role = 'admin'",
+            [normalizedPhone]
         );
 
         if (admins.length === 0) {
-            return res.status(401).json({ message: 'No such user' });
+            return res.status(401).json({ message: 'Access denied: Admin account not found' });
         }
 
         const admin = admins[0];
@@ -196,9 +220,6 @@ router.post('/admin-login', async (req, res) => {
         if (!isMatch) {
             return res.status(401).json({ message: 'Invalid admin credentials' });
         }
-
-        // Update last login (optional)
-        // await db.query('UPDATE users SET updated_at = NOW() WHERE id = ?', [admin.id]);
 
         // Create JWT token
         const token = jwt.sign(
