@@ -23,7 +23,7 @@ const Footer = ({ isAdmin }) => {
                     </div>
                 </div>
 
-                <div className="footer-section footer-links">
+                {/* <div className="footer-section footer-links">
                     <h4>Quick Links</h4>
                     <ul>
                         <li><Link to="/">Home</Link></li>
@@ -32,7 +32,7 @@ const Footer = ({ isAdmin }) => {
                         <li><Link to="/history">Order History</Link></li>
                         <li><Link to="/profile">My Profile</Link></li>
                     </ul>
-                </div>
+                </div> */}
 
                 <div className="footer-section footer-contact">
                     <h4>Contact Us</h4>
@@ -45,10 +45,10 @@ const Footer = ({ isAdmin }) => {
                             <Phone size={20} />
                             <span>+254 710 933 724</span>
                         </li>
-                        <li className="contact-item">
+                        {/* <li className="contact-item">
                             <Mail size={20} />
                             <span>hello@staffoods.co.ke</span>
-                        </li>
+                        </li> */}
                     </ul>
                 </div>
             </div>
