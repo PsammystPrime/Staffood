@@ -57,7 +57,7 @@ const Footer = ({ isAdmin }) => {
                 <div className="container footer-bottom-content">
                     <p>&copy; {currentYear} Staffoods Groceries. All rights reserved.</p>
                     <p className="footer-credit">
-                        System built and maintained by <span>MASTERPIECE SOFTWARES</span>
+                        System built and maintained by <span> <a href="https://masterpiecesolutions.co.ke">MASTERPIECE SOFTWARES</a></span>
                     </p>
                 </div>
             </div>
